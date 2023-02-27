@@ -1,7 +1,7 @@
 namespace data {
 
     export interface Msg {
-        msgType: string
+        msgType: number
         topic: string
     }
 
@@ -11,8 +11,9 @@ namespace data {
     }
 
     export interface InsertMsg extends Msg {
-        targetTopic: string,
+        parentTopic: string,
         data: Map<string, string>
+        children: InsertMsg[];
     }
 
     export interface UpdateMsg extends Msg {
@@ -38,7 +39,7 @@ namespace data {
 
         private parent: false | DataModel;
 
-        constructor(private topic: string, private data: Map<string, string>) {
+        constructor(public topic: string, public data: Map<string, string>) {
             this.children = [];
             this.delegates = [];
         }

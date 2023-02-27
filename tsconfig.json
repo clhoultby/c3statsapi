@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "outFile": "./static/js/main.js",
+    "rootDir": "./",
+  },
+  "include": [
+    "./ui/data/*.ts",
+    "./ui/connection/*.ts",
+    "./ui/core/*.ts",
+    "./ui/core/*.ts",
+    "./ui/stats/*.ts",
+    "./ui/Application.ts"
+  ]
+}

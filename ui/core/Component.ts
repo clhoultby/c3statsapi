@@ -2,15 +2,40 @@ namespace core {
 
     export class Component {
 
+        private styles: string[];
+        private commitStyles: boolean;
+
         protected element: HTMLElement;
 
         public parent: false | Component;
-        
+
         public children: Component[];
 
         constructor(elementType: string = "div") {
             this.element = document.createElement(elementType);
             this.children = [];
+            this.styles = [];
+        }
+
+        public setText(text: string): void {
+            window.requestAnimationFrame(() => {
+                this.element.innerText = text;
+            });
+        }
+
+        public addStyle(style: string): void {
+            this.styles.push(style);
+
+            if (this.commitStyles) {
+                return
+            }
+
+            this.commitStyles = true;
+
+            window.requestAnimationFrame(() => {
+                this.element.setAttribute("class", this.styles.join(""));
+                this.commitStyles = false;
+            });
         }
 
         public getElement(): HTMLElement {
@@ -21,8 +46,10 @@ namespace core {
             child.render();
             child.parent = this;
             this.children.push(child);
-            
-            this.element.appendChild(child.getElement());
+
+            window.requestAnimationFrame(() => {
+                this.element.appendChild(child.getElement());
+            });
         }
 
 
@@ -43,11 +70,10 @@ namespace core {
 
 
         protected dispose(): void {
-
             for (const c of this.children) {
                 c.dispose();
             }
-         }
+        }
 
     }
 

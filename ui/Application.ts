@@ -5,6 +5,8 @@ class Application extends core.Component {
     constructor() {
         super();
 
+        debugger;
+
         this.element = document.body;
 
         // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
@@ -15,6 +17,8 @@ class Application extends core.Component {
                 onDisconnnect: () => this.onWsDisconnect(),
             }
         );
+
+        this.connection.connnect();
     }
 
 
@@ -28,7 +32,18 @@ class Application extends core.Component {
 
     public onWSReady(): void {
         console.log("ready");
+
+        this.connection.subscribe("stats", this);
     }
 
+    public subscriptionReady(dm: data.DataModel): void {
 
+        const table = new stats.Table(dm);
+        this.appendChild(table);
+    }
+}
+
+
+window.onload = () => {
+    new Application();
 }

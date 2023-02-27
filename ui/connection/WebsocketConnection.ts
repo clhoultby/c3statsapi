@@ -6,35 +6,13 @@ namespace connection {
 
     interface ISubscriber {
         subscriptionReady(model: DataModel);
-        subscriptionError(topic: string);
     }
 
     export class WebSocketConnection {
         private ws: WebSocket;
 
         private subscribers = new Map<topic, ISubscriber[]>();
-
-        private lookup = new Map<topic, DataModel>();
-
-
-        public subscribe(topic: topic, subscriber: ISubscriber) {
-            if (this.lookup[topic]) {
-                subscriber.subscriptionReady(this.lookup[topic]);
-                return;
-            }
-
-            if (!this.subscribers[topic]) {
-                this.subscribers[topic] = [];
-            }
-
-            this.subscribers[topic].push(subscriber);
-
-
-
-        }
-
-
-
+        private lookup = (window as any).lookup = new Map<topic, DataModel>();
 
 
         constructor(
@@ -65,13 +43,10 @@ namespace connection {
                 this.delegate.onDisconnnect();
             }
 
-            this.ws.onmessage = (event) => {
-                if (!event.data) {
-                    console.error("missing data")
-                    return;
-                }
+            var reader = new FileReader();
+            reader.onload = () => {
 
-                const message: data.Msg = JSON.parse(event.data)
+                const message = JSON.parse(reader.result as string) as data.Msg;
                 switch (message.msgType) {
 
                     case MessageType.Subscribe:
@@ -90,29 +65,74 @@ namespace connection {
                         break;
 
                     default:
-                        console.log(`Unknown message type: ${event.data}`);
+                        console.log(`Unknown message type: ${message}`);
                         break;
                 }
+
             };
+
+            this.ws.onmessage = (event) => {
+                if (!event.data) {
+                    console.error("missing data")
+                    return;
+                }
+
+                reader.readAsBinaryString(event.data);
+            };
+        }
+
+        public subscribe(topic: topic, subscriber: ISubscriber) {
+            if (this.lookup[topic]) {
+                subscriber.subscriptionReady(this.lookup[topic]);
+                return;
+            }
+
+            if (!this.subscribers[topic]) {
+                this.subscribers[topic] = [];
+            }
+
+            this.subscribers[topic].push(subscriber);
+        }
+
+
+        private addModel(): void {
+
         }
 
 
         private subscriptionHandler(message: data.Snapshot): void {
+            debugger;
 
             this.lookup[message.topic] = new DataModel(message.topic, message.data);
-            for (const child of message.children) {
-                this.lookup[child.topic] = new DataModel(child.topic, child.data);
+            for (const topic in message.children) {
+                
+                const child = message.children[topic];
+                this.lookup[topic] = new DataModel(child.topic, child.data);
+                this.lookup[message.topic].insert(this.lookup[topic]);
+
+                if (child.parentTopic) {
+                    this.lookup[child.parentTopic] && this.lookup[child.parentTopic].insert(this.lookup[topic]);
+                }
+
+                if (child.children) {
+                    for (const c of child.children) {
+                        this.lookup[c.topic] = new DataModel(c.topic, c.data);
+                        this.lookup[topic].insert(c);
+                    }
+                }
             }
 
             for (const s of this.subscribers[message.topic]) {
                 s.subscriptionReady(this.lookup[message.topic]);
             }
+
+            this.subscribers[message.topic] = [];
         }
 
         private insertHandler(message: data.InsertMsg): void {
             const dm = new DataModel(message.topic, message.data);
             this.lookup[message.topic] = dm;
-            this.lookup[message.targetTopic] && this.lookup[message.targetTopic].insert(dm);
+            this.lookup[message.parentTopic] && this.lookup[message.parentTopic].insert(dm);
         }
 
         private updateHandler(message: data.UpdateMsg): void {
