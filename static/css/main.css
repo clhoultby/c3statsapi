@@ -1,0 +1,9 @@
+.stats-StatCell{
+    text-align: center;
+    padding: 8px;
+}
+
+.stats-StatHeader_cell {
+    font-weight: bold;
+    padding: 16px;
+}
