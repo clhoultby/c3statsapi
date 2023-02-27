@@ -7,6 +7,9 @@ var data;
             this.children = [];
             this.delegates = [];
         }
+        addDelegate(d) {
+            this.delegates.push(d);
+        }
         getChildren() {
             return this.children;
         }
@@ -132,7 +135,7 @@ var connection;
                 if (child.children) {
                     for (const c of child.children) {
                         this.lookup[c.topic] = new DataModel(c.topic, c.data);
-                        this.lookup[topic].insert(c);
+                        this.lookup[topic].insert(this.lookup[c.topic]);
                     }
                 }
             }
@@ -170,6 +173,7 @@ var core;
     class Component {
         constructor(elementType = "div") {
             this.element = document.createElement(elementType);
+            this.element.wrapper = this;
             this.children = [];
             this.styles = [];
         }
@@ -180,6 +184,21 @@ var core;
         }
         addStyle(style) {
             this.styles.push(style);
+            if (this.commitStyles) {
+                return;
+            }
+            this.commitStyles = true;
+            window.requestAnimationFrame(() => {
+                this.element.setAttribute("class", this.styles.join(""));
+                this.commitStyles = false;
+            });
+        }
+        removeStyle(style) {
+            const i = this.styles.indexOf(style);
+            if (i === -1) {
+                return;
+            }
+            this.styles.splice(i, 1);
             if (this.commitStyles) {
                 return;
             }
@@ -225,6 +244,13 @@ var core;
         constructor(model, elementType = "div") {
             super(elementType);
             this.model = model;
+            model.addDelegate(this);
+        }
+        insert(model) {
+        }
+        update(data) {
+        }
+        delete() {
         }
     }
     core.DataComponent = DataComponent;
@@ -238,6 +264,13 @@ var stats;
         render() {
             this.addStyle("stats-StatCell");
             this.setText(this.model.data["value"]);
+        }
+        update(data) {
+            this.setText(data["value"]);
+            this.addStyle("stats-StatCell-updated");
+            window.setTimeout(() => {
+                this.removeStyle("stats-StatCell-updated");
+            }, 5000);
         }
     }
     stats.StatCell = StatCell;

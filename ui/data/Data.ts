@@ -44,6 +44,19 @@ namespace data {
             this.delegates = [];
         }
 
+        public addDelegate(d: IDataModelDelegate): void {
+            this.delegates.push(d);
+        }
+
+        public removeDelete(d: IDataModelDelegate): void {
+            const i = this.delegates.indexOf(d); 
+            if (i === -1) {
+                return;
+            }
+
+            this.delegates.splice(i, 1);
+        }
+
 
         public getChildren(): DataModel[] {
             return this.children;

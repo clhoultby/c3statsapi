@@ -117,7 +117,7 @@ namespace connection {
                 if (child.children) {
                     for (const c of child.children) {
                         this.lookup[c.topic] = new DataModel(c.topic, c.data);
-                        this.lookup[topic].insert(c);
+                        this.lookup[topic].insert(this.lookup[c.topic]);
                     }
                 }
             }

@@ -13,6 +13,7 @@ namespace core {
 
         constructor(elementType: string = "div") {
             this.element = document.createElement(elementType);
+            (this.element as any).wrapper = this;
             this.children = [];
             this.styles = [];
         }
@@ -25,6 +26,26 @@ namespace core {
 
         public addStyle(style: string): void {
             this.styles.push(style);
+
+            if (this.commitStyles) {
+                return
+            }
+
+            this.commitStyles = true;
+
+            window.requestAnimationFrame(() => {
+                this.element.setAttribute("class", this.styles.join(""));
+                this.commitStyles = false;
+            });
+        }
+
+        public removeStyle(style: string): void {
+            const i = this.styles.indexOf(style);
+            if (i === -1) {
+                return;
+            }
+
+            this.styles.splice(i, 1);
 
             if (this.commitStyles) {
                 return
