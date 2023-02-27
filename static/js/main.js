@@ -10,6 +10,13 @@ var data;
         addDelegate(d) {
             this.delegates.push(d);
         }
+        removeDelete(d) {
+            const i = this.delegates.indexOf(d);
+            if (i === -1) {
+                return;
+            }
+            this.delegates.splice(i, 1);
+        }
         getChildren() {
             return this.children;
         }
@@ -257,6 +264,20 @@ var core;
 })(core || (core = {}));
 var stats;
 (function (stats) {
+    class CharCell extends core.DataComponent {
+        constructor(dm) {
+            super(dm, "td");
+        }
+        render() {
+            debugger;
+            this.addStyle("stats-CharCell");
+            this.setText(this.model.data["name"]);
+        }
+    }
+    stats.CharCell = CharCell;
+})(stats || (stats = {}));
+var stats;
+(function (stats) {
     class StatCell extends core.DataComponent {
         constructor(dm) {
             super(dm, "td");
@@ -270,7 +291,7 @@ var stats;
             this.addStyle("stats-StatCell-updated");
             window.setTimeout(() => {
                 this.removeStyle("stats-StatCell-updated");
-            }, 5000);
+            }, 1000);
         }
     }
     stats.StatCell = StatCell;
@@ -283,6 +304,10 @@ var stats;
         }
         render() {
             this.addStyle("stats-StatHeader");
+            const cell = new core.Component("td");
+            cell.addStyle("stats-StatHeader_cell");
+            cell.setText("Character");
+            this.appendChild(cell);
             for (const c of this.model.getChildren()) {
                 const cell = new core.Component("td");
                 cell.addStyle("stats-StatHeader_cell");
@@ -301,6 +326,7 @@ var stats;
         }
         render() {
             this.addStyle("stats-StatRow");
+            this.appendChild(new stats.CharCell(this.model));
             for (const c of this.model.getChildren()) {
                 this.appendChild(new stats.StatCell(c));
             }

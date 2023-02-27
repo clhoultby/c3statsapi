@@ -9,6 +9,11 @@ namespace stats {
         protected render(): void {
             this.addStyle("stats-StatHeader");
 
+            const cell = new core.Component("td");
+            cell.addStyle("stats-StatHeader_cell");
+            cell.setText("Character");
+            this.appendChild(cell);
+            
             for (const c of this.model.getChildren()) {
                 const cell = new core.Component("td");
                 cell.addStyle("stats-StatHeader_cell");
