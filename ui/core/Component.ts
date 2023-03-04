@@ -34,7 +34,7 @@ namespace core {
             this.commitStyles = true;
 
             window.requestAnimationFrame(() => {
-                this.element.setAttribute("class", this.styles.join(""));
+                this.element.setAttribute("class", this.styles.join(" "));
                 this.commitStyles = false;
             });
         }

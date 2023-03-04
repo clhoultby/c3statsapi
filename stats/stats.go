@@ -30,8 +30,9 @@ func formatCharColumn(c *data.Char) *publisher.Topic {
 	col := publisher.NewTopicWithData(
 		fmt.Sprintf("S_C%v", c.ID),
 		map[string]string{
-			"name": c.Name,
-			"img":  c.ImgURL,
+			"name":        c.FirstName,
+			"second_name": c.SecondName,
+			"img":         c.ImgURL,
 		})
 
 	for _, s := range c.Stats {

@@ -2,6 +2,7 @@ package data
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 )
 
@@ -15,8 +16,12 @@ const (
 
 var model = &DataModel{
 	characters: []*Char{
-		NewChar(0, "Aldrick Wright"),
-		NewChar(1, "Aranris"),
+		NewChar(0, "Aldrick", "Wright"),
+		NewChar(1, "Aranris", "Mistarelthwin"),
+		NewChar(2, "Hoots", ""),
+		NewChar(3, "Kdaav", "Paal Vadu"),
+		NewChar(4, "Elendar", "Mor"),
+		NewChar(5, "Ofeliya", "Wolfram"),
 	},
 }
 
@@ -38,11 +43,12 @@ func (m *DataModel) AddChar(c *Char) {
 	m.characters = append(m.characters, c)
 }
 
-func NewChar(id int, name string) *Char {
+func NewChar(id int, name string, secondName string) *Char {
 	return &Char{
-		ID:     id,
-		Name:   name,
-		ImgURL: fmt.Sprintf("char_%v.jpg", id),
+		ID:         id,
+		FirstName:  name,
+		SecondName: secondName,
+		ImgURL:     fmt.Sprintf("/img/char_%v.jpg", strings.ToLower(name)),
 		Stats: map[int]*Stat{
 			StatTypeHits:   NewStat(StatTypeHits, id, "Hits", "0"),
 			StatTypeCrits:  NewStat(StatTypeCrits, id, "Crits", "0"),
@@ -59,11 +65,12 @@ func (c *Char) AddStat(typeID int, name string, value string) {
 }
 
 type Char struct {
-	Mutex  sync.Mutex    `json:"-"`
-	ID     int           `json:"id"`
-	ImgURL string        `json:"img"`
-	Name   string        `json:"name"`
-	Stats  map[int]*Stat `json:"stats"`
+	Mutex      sync.Mutex    `json:"-"`
+	ID         int           `json:"id"`
+	ImgURL     string        `json:"img"`
+	FirstName  string        `json:"name"`
+	SecondName string        `json:"second_name"`
+	Stats      map[int]*Stat `json:"stats"`
 }
 
 func (c *Char) Topic() string {
@@ -74,7 +81,7 @@ func (c *Char) Data() map[string]string {
 	return map[string]string{
 		"id":   fmt.Sprint(c.ID),
 		"img":  c.ImgURL,
-		"name": c.Name,
+		"name": c.FirstName,
 	}
 }
 

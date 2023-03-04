@@ -162,7 +162,6 @@ var connection;
             }
         }
         subscriptionHandler(message) {
-            debugger;
             const snapshot = message.data;
             if (!snapshot.topic) {
                 console.error(`subscription error for topic: ${message.topic}`);
@@ -178,6 +177,7 @@ var connection;
             this.insertModel(message);
         }
         updateHandler(message) {
+            debugger;
             const model = this.lookup[message.topic];
             if (!model) {
                 console.error("update: model not present for topic=" + message.topic);
@@ -217,7 +217,7 @@ var core;
             }
             this.commitStyles = true;
             window.requestAnimationFrame(() => {
-                this.element.setAttribute("class", this.styles.join(""));
+                this.element.setAttribute("class", this.styles.join(" "));
                 this.commitStyles = false;
             });
         }
@@ -292,29 +292,86 @@ var core;
     }
     core.DataComponent = DataComponent;
 })(core || (core = {}));
-var stats;
-(function (stats) {
-    class CharCell extends core.DataComponent {
-        constructor(dm) {
-            super(dm);
+var header;
+(function (header) {
+    var Component = core.Component;
+    class Header extends Component {
+        constructor() {
+            super(...arguments);
+            this.baseStyle = "header-Header";
         }
         render() {
-            this.addStyle("stats-CharCell");
-            this.setText(this.model.data["name"]);
+            this.addStyle(this.baseStyle);
+            const logo = new Component();
+            logo.addStyle(this.baseStyle + "_logo");
+            this.appendChild(logo);
+            const container = new Component();
+            container.addStyle(this.baseStyle + "_container");
+            this.appendChild(container);
+            const title = new Component();
+            title.addStyle(this.baseStyle + "_title");
+            title.setText("Evermere");
+            container.appendChild(title);
+            const subTitle = new Component();
+            subTitle.addStyle(this.baseStyle + "_subtitle");
+            subTitle.setText("The Last Titan");
+            container.appendChild(subTitle);
+        }
+    }
+    header.Header = Header;
+})(header || (header = {}));
+var stats;
+(function (stats) {
+    var Component = core.Component;
+    class CharCell extends core.DataComponent {
+        constructor() {
+            super(...arguments);
+            this.baseStyle = "stats-CharCell";
+        }
+        render() {
+            this.addStyle(this.baseStyle);
+            const img = new Component();
+            img.addStyle(this.baseStyle + "_img");
+            img.getElement().setAttribute("style", `background-image:url("${this.model.data["img"]}")`);
+            this.appendChild(img);
+            const name = new Component();
+            name.addStyle(this.baseStyle + "_name");
+            name.setText(this.model.data["name"]);
+            this.appendChild(name);
+            const secondName = new Component();
+            secondName.addStyle(this.baseStyle + "_secondname");
+            secondName.setText(this.model.data["secondName"] || "");
+            this.appendChild(secondName);
         }
     }
     stats.CharCell = CharCell;
 })(stats || (stats = {}));
 var stats;
 (function (stats) {
+    class CharColumn extends core.DataComponent {
+        render() {
+            this.addStyle("stats-CharColumn");
+            const header = new stats.CharCell(this.model);
+            this.appendChild(header);
+            for (const c of this.model.getChildren()) {
+                this.appendChild(new stats.StatCell(c));
+            }
+        }
+    }
+    stats.CharColumn = CharColumn;
+})(stats || (stats = {}));
+var stats;
+(function (stats) {
     class StatCell extends core.DataComponent {
         constructor(dm) {
-            super(dm, "textarea");
+            super(dm, "input");
         }
         render() {
             this.addStyle("stats-StatCell");
+            this.element.setAttribute("inputmode", "numeric");
             this.element.value = this.model.data["value"];
-            this.element.onchange = e => this.onChangeHandler(e);
+            this.element.onblur = e => this.onChangeHandler(e);
+            this.element.onfocus = e => this.element.value = "";
         }
         update(data) {
             this.setText(data["value"]);
@@ -322,6 +379,11 @@ var stats;
             window.setTimeout(() => {
                 this.removeStyle("stats-StatCell-updated");
             }, 1000);
+        }
+        setText(text) {
+            window.requestAnimationFrame(() => {
+                this.element.value = text;
+            });
         }
         onChangeHandler(e) {
             const v = this.element.value && this.element.value.trim();
@@ -337,6 +399,39 @@ var stats;
         }
     }
     stats.StatCell = StatCell;
+})(stats || (stats = {}));
+var stats;
+(function (stats) {
+    class StatDescCell extends core.DataComponent {
+        constructor(dm) {
+            super(dm);
+        }
+        render() {
+            this.addStyle("stats-StatDescCell");
+            this.setText(this.model.data["name"]);
+        }
+    }
+    stats.StatDescCell = StatDescCell;
+})(stats || (stats = {}));
+var stats;
+(function (stats) {
+    var Component = core.Component;
+    class StatDescColumn extends core.DataComponent {
+        constructor(dm) {
+            super(dm);
+            this.baseStyle = "stats-StatDescColumn";
+        }
+        render() {
+            this.addStyle(this.baseStyle);
+            const header = new Component();
+            header.addStyle(this.baseStyle + "_header");
+            this.appendChild(header);
+            for (const c of this.model.getChildren()) {
+                this.appendChild(new stats.StatDescCell(c));
+            }
+        }
+    }
+    stats.StatDescColumn = StatDescColumn;
 })(stats || (stats = {}));
 var stats;
 (function (stats) {
@@ -362,33 +457,17 @@ var stats;
 })(stats || (stats = {}));
 var stats;
 (function (stats) {
-    class StatRow extends core.DataComponent {
-        constructor(dm) {
-            super(dm);
-        }
-        render() {
-            this.addStyle("stats-StatRow");
-            this.appendChild(new stats.CharCell(this.model));
-            for (const c of this.model.getChildren()) {
-                this.appendChild(new stats.StatCell(c));
-            }
-        }
-    }
-    stats.StatRow = StatRow;
-})(stats || (stats = {}));
-var stats;
-(function (stats) {
     class Table extends core.DataComponent {
         constructor(dm) {
             super(dm);
         }
         render() {
             this.addStyle("stats-Table");
-            const header = new stats.StatHeader(this.model.getChildren()[0]);
-            this.appendChild(header);
-            for (const dm of this.model.getChildren()) {
-                const row = new stats.StatRow(dm);
-                this.appendChild(row);
+            const children = this.model.getChildren();
+            const statDescColumn = new stats.StatDescColumn(children[0]);
+            this.appendChild(statDescColumn);
+            for (let i = 1; i < children.length; i++) {
+                this.appendChild(new stats.CharColumn(children[i]));
             }
         }
     }
@@ -420,6 +499,7 @@ class Application extends core.Component {
     }
     onWSReady() {
         this.connection.subscribe("STATS", this);
+        this.appendChild(new header.Header());
     }
     subscriptionReady(dm) {
         const table = new stats.Table(dm);

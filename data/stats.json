@@ -1,0 +1,196 @@
+{
+    "characters": [
+        {
+            "id": 0,
+            "img": "char_aldrick.jpg",
+            "name": "Aldrick",
+            "second_name": "Wright",
+            "stats": {
+                "0": {
+                    "id": "0",
+                    "cId": "0",
+                    "value": "0",
+                    "name": "Hits"
+                },
+                "1": {
+                    "id": "1",
+                    "cId": "0",
+                    "value": "0",
+                    "name": "Crits"
+                },
+                "2": {
+                    "id": "2",
+                    "cId": "0",
+                    "value": "0",
+                    "name": "Damage"
+                },
+                "3": {
+                    "id": "2",
+                    "cId": "0",
+                    "value": "0",
+                    "name": "Kills"
+                }
+            }
+        },
+        {
+            "id": 1,
+            "img": "char_aranris.jpg",
+            "name": "Aranris",
+            "second_name": "Mistarelthwin",
+            "stats": {
+                "0": {
+                    "id": "0",
+                    "cId": "1",
+                    "value": "0",
+                    "name": "Hits"
+                },
+                "1": {
+                    "id": "1",
+                    "cId": "1",
+                    "value": "0",
+                    "name": "Crits"
+                },
+                "2": {
+                    "id": "2",
+                    "cId": "1",
+                    "value": "0",
+                    "name": "Damage"
+                },
+                "3": {
+                    "id": "2",
+                    "cId": "1",
+                    "value": "0",
+                    "name": "Kills"
+                }
+            }
+        },
+        {
+            "id": 2,
+            "img": "char_hoots.jpg",
+            "name": "Hoots",
+            "second_name": "",
+            "stats": {
+                "0": {
+                    "id": "0",
+                    "cId": "2",
+                    "value": "0",
+                    "name": "Hits"
+                },
+                "1": {
+                    "id": "1",
+                    "cId": "2",
+                    "value": "0",
+                    "name": "Crits"
+                },
+                "2": {
+                    "id": "2",
+                    "cId": "2",
+                    "value": "0",
+                    "name": "Damage"
+                },
+                "3": {
+                    "id": "2",
+                    "cId": "2",
+                    "value": "0",
+                    "name": "Kills"
+                }
+            }
+        },
+        {
+            "id": 3,
+            "img": "char_kdaav.jpg",
+            "name": "Kdaav",
+            "second_name": "Paal Vadu",
+            "stats": {
+                "0": {
+                    "id": "0",
+                    "cId": "3",
+                    "value": "0",
+                    "name": "Hits"
+                },
+                "1": {
+                    "id": "1",
+                    "cId": "3",
+                    "value": "0",
+                    "name": "Crits"
+                },
+                "2": {
+                    "id": "2",
+                    "cId": "3",
+                    "value": "0",
+                    "name": "Damage"
+                },
+                "3": {
+                    "id": "2",
+                    "cId": "3",
+                    "value": "0",
+                    "name": "Kills"
+                }
+            }
+        },
+        {
+            "id": 4,
+            "img": "char_elendar.jpg",
+            "name": "Elendar",
+            "second_name": "Mor",
+            "stats": {
+                "0": {
+                    "id": "0",
+                    "cId": "4",
+                    "value": "0",
+                    "name": "Hits"
+                },
+                "1": {
+                    "id": "1",
+                    "cId": "4",
+                    "value": "0",
+                    "name": "Crits"
+                },
+                "2": {
+                    "id": "2",
+                    "cId": "4",
+                    "value": "0",
+                    "name": "Damage"
+                },
+                "3": {
+                    "id": "2",
+                    "cId": "4",
+                    "value": "0",
+                    "name": "Kills"
+                }
+            }
+        },
+        {
+            "id": 5,
+            "img": "char_ofeliya.jpg",
+            "name": "Ofeliya",
+            "second_name": "Wolfram",
+            "stats": {
+                "0": {
+                    "id": "0",
+                    "cId": "5",
+                    "value": "0",
+                    "name": "Hits"
+                },
+                "1": {
+                    "id": "1",
+                    "cId": "5",
+                    "value": "0",
+                    "name": "Crits"
+                },
+                "2": {
+                    "id": "2",
+                    "cId": "5",
+                    "value": "0",
+                    "name": "Damage"
+                },
+                "3": {
+                    "id": "2",
+                    "cId": "5",
+                    "value": "0",
+                    "name": "Kills"
+                }
+            }
+        }
+    ]
+}

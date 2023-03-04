@@ -45,6 +45,8 @@ class Application extends core.Component {
 
     public onWSReady(): void {
         this.connection.subscribe("STATS", this);
+
+        this.appendChild(new header.Header());
     }
 
     public subscriptionReady(dm: data.DataModel): void {

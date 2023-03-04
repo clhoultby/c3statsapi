@@ -1,14 +1,85 @@
+* {
+    box-sizing: border-box;
+    font-family: Roboto, Helvetica, sans-serif;
+}
+
+body {
+    background-color: aliceblue;
+}
+
 .stats-Table {
+    margin-top: 20px;
     display: flex;
-    flex-direction: column;
 }
 
 .stats-StatRow {
     display: flex;
 }
 
+.stats-StatDescColumn {
+    width: 80px;
+}
+
+
+.stats-StatDescColumn,
+.stats-CharColumn {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.stats-CharColumn {
+    margin: 10px;
+    flex: 1;
+}
+
+.stats-CharCell,
+.stats-StatDescColumn_header,
+.stats-StatCell,
+.stats-StatDescCell {
+    display: flex;
+    justify-content: center;
+    height: 80px;
+}
+
+.stats-StatDescColumn_header,
+.stats-StatDescCell,
+.stats-StatCell,
 .stats-CharCell {
-    width: 25%;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.stats-CharCell {
+    border: 2px #b90202 solid;
+    border-radius: 3px;
+    align-items: center;
+    background-color: #fff;
+}
+
+.stats-CharCell_img {
+    background-repeat: no-repeat;
+    background-size: 75px;
+    background-size: contain;
+    height: 100%;
+    width: 107px;
+    border-radius: 2px;
+    flex: 0 1 100%;
+    
+
+}
+
+.stats-CharCell_name,
+.stats-CharCell_secondname {
+    flex-wrap: wrap;
+    width: 50%;
+    flex: 1;
+    font-size: 20px;
+    padding-right: 10px;
+}
+
+.stats-StatDescCell {
+    align-items: center;
 }
 
 .stats-StatHeader_charcell {
@@ -17,15 +88,25 @@
 
 .stats-StatCell {
     text-align: center;
-    padding: 8px;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 18px;
+    background-color: #fff;
 }
+
+.stats-StatCell-updated {
+    animation: stats-highlight 2.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+@keyframes stats-highlight {
+    0% {background-color: #fff;}
+    25% {background-color: #b7dfb7;}
+    100% {background-color: #fff;}
+}
+
 
 .stats-StatHeader_cell {
     font-weight: bold;
     padding: 16px;
-    width: 10%;
-}
-
-.stats-StatCell {
     width: 10%;
 }

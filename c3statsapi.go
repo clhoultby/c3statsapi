@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/websocket"
@@ -21,6 +23,14 @@ func main() {
 
 	// API Initialisation
 	chars := data.GetCharacters()
+
+	for _, v := range chars {
+
+		out, _ := json.MarshalIndent(v, "", "\t")
+		fmt.Println(string(out))
+
+	}
+
 	stats.Init(chars)
 
 	go publisher.Listen()

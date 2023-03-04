@@ -9,16 +9,14 @@ namespace stats {
         protected render() {
             this.addStyle("stats-Table");
 
-            const header = new StatHeader(this.model.getChildren()[0]);
-            this.appendChild(header);
+            const children = this.model.getChildren();
 
-            for (const dm of this.model.getChildren()) {
-                const row = new StatRow(dm);
-                this.appendChild(row);
+            const statDescColumn = new StatDescColumn(children[0]);
+            this.appendChild(statDescColumn);
 
+            for (let i = 1; i <  children.length; i++) {
+                this.appendChild(new CharColumn(children[i]));
             }
         }
-
     }
-
 }

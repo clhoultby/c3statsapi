@@ -2,13 +2,13 @@ package publisher
 
 import (
 	"encoding/json"
-	"fmt"
 	"sync"
 	"sync/atomic"
 
 	"github.com/gorilla/websocket"
 
 	"c3statsapi/data"
+	"c3statsapi/log"
 )
 
 var connections = &Connections{
@@ -30,7 +30,7 @@ func Listen() {
 			s.c.WriteMessage(2, b)
 		}
 
-		fmt.Printf("message: %s", b)
+		log.Logf("message: %s", b)
 	}
 
 }
@@ -81,7 +81,7 @@ func (t *Tree) Snapshot(topicID string) []byte {
 
 	out, err := json.Marshal(&response)
 	if err != nil {
-		fmt.Printf("err:%v", err)
+		log.Logf("err:%v", err)
 	}
 
 	snapshotCache = out

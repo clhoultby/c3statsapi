@@ -2,11 +2,11 @@ package publisher
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/gorilla/websocket"
 
 	"c3statsapi/data"
+	"c3statsapi/log"
 )
 
 type Subscriber struct {
@@ -20,11 +20,11 @@ func (s *Subscriber) Listen() {
 
 		socketMsgType, b, err := s.c.ReadMessage()
 		if err != nil {
-			fmt.Printf("connectionRead error %v", err)
+			log.Logf("connectionRead error %v", err)
 			break
 		}
 
-		fmt.Printf("socketMsgType: %v, b:[%s]", socketMsgType, b)
+		log.Logf("socketMsgType: %v, b:[%s]", socketMsgType, b)
 
 		msgType := int(b[0])
 
@@ -39,17 +39,17 @@ func (s *Subscriber) Listen() {
 			var msg data.DeleteMsg
 			err := json.Unmarshal(b[1:], &msg)
 			if err != nil {
-				fmt.Printf("error parsing delete message err=%v b=%s", err, b)
+				log.Logf("error parsing delete message err=%v b=%s", err, b)
 				continue
 			}
 
 			tree.DeleteTopic(msg.TopicID)
 
-		case 50:
+		case 50: //data.MsgIDUpdate
 			var msg data.UpdateMsg
 			err := json.Unmarshal(b[1:], &msg)
 			if err != nil {
-				fmt.Printf("error parsing update message err=%v b=%s", err, b)
+				log.Logf("error parsing update message err=%v b=%s", err, b)
 				continue
 			}
 

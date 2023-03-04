@@ -11,13 +11,13 @@ type Topic struct {
 	ID          string            `json:"topic"`
 	ParentTopic string            `json:"parentTopic,omitempty"`
 	Data        map[string]string `json:"data"`
-	Children    map[string]*Topic `json:"children,omitempty"`
+	Children    []*Topic          `json:"children,omitempty"`
 }
 
 func NewTopic(id string) *Topic {
 	t := &Topic{
 		ID:       id,
-		Children: map[string]*Topic{},
+		Children: []*Topic{},
 	}
 
 	tree.InsertTopic(t)
@@ -27,7 +27,7 @@ func NewTopic(id string) *Topic {
 func NewTopicWithData(id string, data map[string]string) *Topic {
 	t := &Topic{
 		ID:       id,
-		Children: map[string]*Topic{},
+		Children: []*Topic{},
 		Data:     data,
 	}
 
@@ -43,7 +43,7 @@ func (t *Topic) AddChild(child *Topic) {
 
 	child.ParentTopic = t.ID
 
-	t.Children[child.ID] = child
+	t.Children = append(t.Children, child)
 }
 
 func (t *Topic) Insert(c *Topic) {
@@ -51,7 +51,7 @@ func (t *Topic) Insert(c *Topic) {
 	defer t.Mutex.Unlock()
 
 	c.ParentTopic = t.ID
-	t.Children[c.ID] = c
+	t.Children = append(t.Children, c)
 
 	msg := data.InsertMsg{
 		MsgType:     data.MsgIDInsert,

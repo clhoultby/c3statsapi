@@ -1,0 +1,42 @@
+.header-Header {
+    display: flex;
+    background-color: black;
+    height: 120px;
+    border-bottom: 3px #b90202 solid;
+    width: 100%;
+}
+
+.header-Header_logo {
+    background-image: url("/img/dnd_logo.png");
+    background-repeat: no-repeat;
+    height: 99%;
+    flex: 0 1 50%;
+    min-width: 410px;
+    background-position-y: center;
+}
+
+.header-Header_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex-wrap: wrap;
+}
+
+.header-Header_title,
+.header-Header_subtitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family:Roboto,Helvetica,sans-serif;
+    color: #fff;
+}
+
+.header-Header_title {
+    font-size: 30px;
+    padding-right: 20px;
+}
+
+.header-Header_subtitle {
+    font-size: 30px;
+}

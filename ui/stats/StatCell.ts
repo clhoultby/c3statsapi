@@ -3,16 +3,19 @@ namespace stats {
     export class StatCell extends core.DataComponent {
 
         constructor(dm: data.DataModel) {
-            super(dm, "textarea");
+            super(dm, "input");
         }
 
         protected element: HTMLTextAreaElement;
 
         protected render(): void {
             this.addStyle("stats-StatCell");
+
+            this.element.setAttribute("inputmode", "numeric");
            
             this.element.value = this.model.data["value"];
-            this.element.onchange =  e => this.onChangeHandler(e);
+            this.element.onblur =  e => this.onChangeHandler(e);
+            this.element.onfocus = e => this.element.value = "";
         }
 
         public update(data: Lookup<string>): void {
@@ -23,6 +26,12 @@ namespace stats {
                 this.removeStyle("stats-StatCell-updated");
             }, 1000)
 
+        }
+
+        public setText(text: string): void {
+            window.requestAnimationFrame(() => {
+                this.element.value = text;
+            });
         }
 
         private onChangeHandler(e: Event): void {
