@@ -489,6 +489,7 @@ class Application extends core.Component {
         console.log("error");
     }
     onWsDisconnect() {
+        document.body.removeChild(this.element);
         // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
         this.connection = new connection.WebSocketConnection({
             onReady: () => this.onWSReady(),
