@@ -37,8 +37,7 @@ func formatCharColumn(c *data.Char) *publisher.Topic {
 
 	for _, s := range c.Stats {
 
-		col.AddChild(publisher.NewTopicWithData(
-			fmt.Sprintf("S_C%v_S%v", c.ID, s.StatTypeID),
+		col.AddChild(publisher.NewTopicWithData(fmt.Sprintf("S_C%v_S%v", c.ID, s.StatTypeID),
 			map[string]string{
 				"value": s.Value,
 			},

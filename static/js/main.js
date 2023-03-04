@@ -177,7 +177,6 @@ var connection;
             this.insertModel(message);
         }
         updateHandler(message) {
-            debugger;
             const model = this.lookup[message.topic];
             if (!model) {
                 console.error("update: model not present for topic=" + message.topic);
@@ -288,6 +287,10 @@ var core;
                 return;
             }
             application.sendMsg(u);
+        }
+        dispose() {
+            this.model.removeDelete(this);
+            super.dispose();
         }
     }
     core.DataComponent = DataComponent;

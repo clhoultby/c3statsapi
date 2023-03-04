@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -34,14 +32,6 @@ func main() {
 
 	// API Initialisation
 	chars := data.GetCharacters()
-
-	for _, v := range chars {
-
-		out, _ := json.MarshalIndent(v, "", "\t")
-		fmt.Println(string(out))
-
-	}
-
 	stats.Init(chars)
 
 	go publisher.Listen()
@@ -65,12 +55,9 @@ func cors(fs http.Handler) http.HandlerFunc {
 
 func NoCache(h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-
-		// Set our NoCache headers
 		for k, v := range noCacheHeaders {
 			w.Header().Set(k, v)
 		}
-
 		h.ServeHTTP(w, r)
 	}
 
