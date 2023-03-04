@@ -38,6 +38,11 @@ namespace core {
             application.sendMsg(u);
         }
 
+        protected dispose(): void {
+            this.model.removeDelete(this);
+            super.dispose();
+        }
+
 
     }
 
