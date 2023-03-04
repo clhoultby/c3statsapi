@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/websocket"
 
@@ -13,7 +14,17 @@ import (
 	"c3statsapi/stats"
 )
 
-var wsUpgrader = websocket.Upgrader{}
+var (
+	wsUpgrader = websocket.Upgrader{}
+	epoch      = time.Unix(0, 0).Format(time.RFC1123)
+
+	noCacheHeaders = map[string]string{
+		"Expires":         epoch,
+		"Cache-Control":   "no-cache, private, max-age=0",
+		"Pragma":          "no-cache",
+		"X-Accel-Expires": "0",
+	}
+)
 
 func main() {
 
@@ -37,7 +48,7 @@ func main() {
 
 	// Web Handlers
 	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/", cors(fs))
+	http.Handle("/", NoCache(cors(fs)))
 
 	http.HandleFunc("/connect", wsConnectionHandler)
 
@@ -50,6 +61,20 @@ func cors(fs http.Handler) http.HandlerFunc {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		fs.ServeHTTP(w, r)
 	}
+}
+
+func NoCache(h http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+
+		// Set our NoCache headers
+		for k, v := range noCacheHeaders {
+			w.Header().Set(k, v)
+		}
+
+		h.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
 }
 
 func wsConnectionHandler(w http.ResponseWriter, r *http.Request) {

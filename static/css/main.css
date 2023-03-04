@@ -80,6 +80,7 @@ body {
 
 .stats-StatDescCell {
     align-items: center;
+    text-align: center;;
 }
 
 .stats-StatHeader_charcell {

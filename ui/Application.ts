@@ -8,7 +8,7 @@ class Application extends core.Component {
     constructor() {
         super();
 
-        this.element = document.body;
+        document.body.appendChild(this.element);
 
         // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
         this.connection = new connection.WebSocketConnection(

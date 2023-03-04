@@ -135,8 +135,7 @@ namespace connection {
         }
 
         private updateHandler(message: data.UpdateMsg): void {
-            debugger;
-            
+
             const model = this.lookup[message.topic];
             if (!model) {
                 console.error("update: model not present for topic=" + message.topic);
