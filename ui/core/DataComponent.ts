@@ -14,12 +14,28 @@ namespace core {
 
         }
 
-        public update(data: Map<string, string>): void {
+        public update(data: Lookup<string>): void {
 
         }
 
         public delete(): void {
 
+        }
+
+
+        protected sendUpdate( u: data.UpdateMsg): void {
+            let application: {
+                sendMsg(s: data.Msg): void;
+            };
+            
+            application = (window as any).application;
+
+            if (!application) {
+                debugger;
+                return;
+            }
+
+            application.sendMsg(u);
         }
 
 

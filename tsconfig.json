@@ -5,6 +5,7 @@
     "rootDir": "./",
   },
   "include": [
+    "./ui/d.ts",
     "./ui/data/*.ts",
     "./ui/connection/*.ts",
     "./ui/core/*.ts",

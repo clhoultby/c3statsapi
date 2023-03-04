@@ -3,10 +3,12 @@ namespace stats {
     export class Table extends core.DataComponent {
 
         constructor(dm: data.DataModel) {
-            super(dm, "table");
+            super(dm);
         }
 
         protected render() {
+            this.addStyle("stats-Table");
+
             const header = new StatHeader(this.model.getChildren()[0]);
             this.appendChild(header);
 

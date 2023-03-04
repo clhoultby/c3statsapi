@@ -3,14 +3,14 @@ namespace stats {
     export class StatHeader extends core.DataComponent {
 
         constructor(dm: data.DataModel) {
-            super(dm, "tr");
+            super(dm);
         }
 
         protected render(): void {
             this.addStyle("stats-StatHeader");
 
             const cell = new core.Component("td");
-            cell.addStyle("stats-StatHeader_cell");
+            cell.addStyle("stats-StatHeader_charcell");
             cell.setText("Character");
             this.appendChild(cell);
             

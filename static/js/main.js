@@ -1,5 +1,26 @@
 var data;
 (function (data_1) {
+    function newUpdateMsg(topic, data) {
+        return { msgType: connection.MessageType.Update, topic, data };
+    }
+    data_1.newUpdateMsg = newUpdateMsg;
+    function newInsertMsg(topic, parentTopic, data, children) {
+        return {
+            msgType: connection.MessageType.Insert,
+            topic,
+            parentTopic,
+            data,
+            children
+        };
+    }
+    data_1.newInsertMsg = newInsertMsg;
+    function newDeleteMsg(topic) {
+        return { msgType: connection.MessageType.Delete, topic };
+    }
+    data_1.newDeleteMsg = newDeleteMsg;
+})(data || (data = {}));
+var data;
+(function (data_2) {
     class DataModel {
         constructor(topic, data) {
             this.topic = topic;
@@ -50,7 +71,7 @@ var data;
             }
         }
     }
-    data_1.DataModel = DataModel;
+    data_2.DataModel = DataModel;
 })(data || (data = {}));
 var connection;
 (function (connection) {
@@ -126,35 +147,35 @@ var connection;
                 this.subscribers[topic] = [];
             }
             this.subscribers[topic].push(subscriber);
+            this.ws.send(connection.MessageType.Subscribe + topic);
         }
-        addModel() {
+        sendMsg(msg) {
+            this.ws.send(msg.msgType + JSON.stringify(msg));
+        }
+        insertModel(message) {
+            this.lookup[message.topic] = new DataModel(message.topic, message.data);
+            if (message.parentTopic) {
+                this.lookup[message.parentTopic] && this.lookup[message.parentTopic].insert(this.lookup[message.topic]);
+            }
+            for (const topic in message.children) {
+                this.insertModel(message.children[topic]);
+            }
         }
         subscriptionHandler(message) {
             debugger;
-            this.lookup[message.topic] = new DataModel(message.topic, message.data);
-            for (const topic in message.children) {
-                const child = message.children[topic];
-                this.lookup[topic] = new DataModel(child.topic, child.data);
-                this.lookup[message.topic].insert(this.lookup[topic]);
-                if (child.parentTopic) {
-                    this.lookup[child.parentTopic] && this.lookup[child.parentTopic].insert(this.lookup[topic]);
-                }
-                if (child.children) {
-                    for (const c of child.children) {
-                        this.lookup[c.topic] = new DataModel(c.topic, c.data);
-                        this.lookup[topic].insert(this.lookup[c.topic]);
-                    }
-                }
+            const snapshot = message.data;
+            if (!snapshot.topic) {
+                console.error(`subscription error for topic: ${message.topic}`);
+                return;
             }
+            this.insertModel(snapshot);
             for (const s of this.subscribers[message.topic]) {
                 s.subscriptionReady(this.lookup[message.topic]);
             }
             this.subscribers[message.topic] = [];
         }
         insertHandler(message) {
-            const dm = new DataModel(message.topic, message.data);
-            this.lookup[message.topic] = dm;
-            this.lookup[message.parentTopic] && this.lookup[message.parentTopic].insert(dm);
+            this.insertModel(message);
         }
         updateHandler(message) {
             const model = this.lookup[message.topic];
@@ -259,6 +280,15 @@ var core;
         }
         delete() {
         }
+        sendUpdate(u) {
+            let application;
+            application = window.application;
+            if (!application) {
+                debugger;
+                return;
+            }
+            application.sendMsg(u);
+        }
     }
     core.DataComponent = DataComponent;
 })(core || (core = {}));
@@ -266,10 +296,9 @@ var stats;
 (function (stats) {
     class CharCell extends core.DataComponent {
         constructor(dm) {
-            super(dm, "td");
+            super(dm);
         }
         render() {
-            debugger;
             this.addStyle("stats-CharCell");
             this.setText(this.model.data["name"]);
         }
@@ -280,11 +309,12 @@ var stats;
 (function (stats) {
     class StatCell extends core.DataComponent {
         constructor(dm) {
-            super(dm, "td");
+            super(dm, "textarea");
         }
         render() {
             this.addStyle("stats-StatCell");
-            this.setText(this.model.data["value"]);
+            this.element.value = this.model.data["value"];
+            this.element.onchange = e => this.onChangeHandler(e);
         }
         update(data) {
             this.setText(data["value"]);
@@ -293,6 +323,18 @@ var stats;
                 this.removeStyle("stats-StatCell-updated");
             }, 1000);
         }
+        onChangeHandler(e) {
+            const v = this.element.value && this.element.value.trim();
+            if (!v) {
+                this.element.value = this.model.data["value"];
+                return;
+            }
+            else if (v == this.model.data["value"]) {
+                return;
+            }
+            const msg = data.newUpdateMsg(this.model.topic, { "value": v });
+            this.sendUpdate(msg);
+        }
     }
     stats.StatCell = StatCell;
 })(stats || (stats = {}));
@@ -300,12 +342,12 @@ var stats;
 (function (stats) {
     class StatHeader extends core.DataComponent {
         constructor(dm) {
-            super(dm, "tr");
+            super(dm);
         }
         render() {
             this.addStyle("stats-StatHeader");
             const cell = new core.Component("td");
-            cell.addStyle("stats-StatHeader_cell");
+            cell.addStyle("stats-StatHeader_charcell");
             cell.setText("Character");
             this.appendChild(cell);
             for (const c of this.model.getChildren()) {
@@ -322,7 +364,7 @@ var stats;
 (function (stats) {
     class StatRow extends core.DataComponent {
         constructor(dm) {
-            super(dm, "tr");
+            super(dm);
         }
         render() {
             this.addStyle("stats-StatRow");
@@ -338,9 +380,10 @@ var stats;
 (function (stats) {
     class Table extends core.DataComponent {
         constructor(dm) {
-            super(dm, "table");
+            super(dm);
         }
         render() {
+            this.addStyle("stats-Table");
             const header = new stats.StatHeader(this.model.getChildren()[0]);
             this.appendChild(header);
             for (const dm of this.model.getChildren()) {
@@ -354,30 +397,38 @@ var stats;
 class Application extends core.Component {
     constructor() {
         super();
-        debugger;
         this.element = document.body;
         // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
         this.connection = new connection.WebSocketConnection({
             onReady: () => this.onWSReady(),
             onError: () => this.onWsError(),
             onDisconnnect: () => this.onWsDisconnect(),
-        });
+        }, "ws://" + document.location.host + "/connect");
         this.connection.connnect();
     }
     onWsError() {
         console.log("error");
     }
     onWsDisconnect() {
+        // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
+        this.connection = new connection.WebSocketConnection({
+            onReady: () => this.onWSReady(),
+            onError: () => this.onWsError(),
+            onDisconnnect: () => this.onWsDisconnect(),
+        }, "ws://" + document.location.host + "/connect");
+        this.connection.connnect();
     }
     onWSReady() {
-        console.log("ready");
-        this.connection.subscribe("stats", this);
+        this.connection.subscribe("STATS", this);
     }
     subscriptionReady(dm) {
         const table = new stats.Table(dm);
         this.appendChild(table);
     }
+    sendMsg(msg) {
+        this.connection.sendMsg(msg);
+    }
 }
 window.onload = () => {
-    new Application();
+    window.application = new Application();
 };

@@ -8,23 +8,27 @@ const (
 )
 
 type SnapshotMsg struct {
-	MsgType  int         `json:"msgType"`
-	TopicID  string      `json:"topic"`
-	Data     string      `json:"data"`
-	Children interface{} `json:"children"`
+	MsgType int         `json:"msgType"`
+	TopicID string      `json:"topic"`
+	Data    interface{} `json:"data"`
+}
+
+type Msg struct {
+	MsgType int    `json:"msgType"`
+	TopicID string `json:"topic"`
 }
 
 type UpdateMsg struct {
-	MsgType int    `json:"msgType"`
-	TopicID string `json:"topic"`
-	Data    []byte `json:"data"`
+	MsgType int               `json:"msgType"`
+	TopicID string            `json:"topic"`
+	Data    map[string]string `json:"data"`
 }
 
 type InsertMsg struct {
-	MsgType     int    `json:"msgType"`
-	ParentTopic string `json:"parentTopic"`
-	TopicID     string `json:"topic"`
-	Data        []byte `json:"data"`
+	MsgType     int               `json:"msgType"`
+	ParentTopic string            `json:"parentTopic"`
+	TopicID     string            `json:"topic"`
+	Data        map[string]string `json:"data"`
 }
 
 type DeleteMsg struct {

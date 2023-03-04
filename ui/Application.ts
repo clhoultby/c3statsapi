@@ -1,11 +1,12 @@
+
+
+
 class Application extends core.Component {
 
     private connection: connection.WebSocketConnection;
 
     constructor() {
         super();
-
-        debugger;
 
         this.element = document.body;
 
@@ -15,7 +16,8 @@ class Application extends core.Component {
                 onReady: () => this.onWSReady(),
                 onError: () => this.onWsError(),
                 onDisconnnect: () => this.onWsDisconnect(),
-            }
+            },
+            "ws://" + document.location.host + "/connect"
         );
 
         this.connection.connnect();
@@ -28,12 +30,21 @@ class Application extends core.Component {
 
     public onWsDisconnect(): void {
 
+         // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
+         this.connection = new connection.WebSocketConnection(
+            {
+                onReady: () => this.onWSReady(),
+                onError: () => this.onWsError(),
+                onDisconnnect: () => this.onWsDisconnect(),
+            },
+            "ws://" + document.location.host + "/connect"
+        );
+
+        this.connection.connnect();
     }
 
     public onWSReady(): void {
-        console.log("ready");
-
-        this.connection.subscribe("stats", this);
+        this.connection.subscribe("STATS", this);
     }
 
     public subscriptionReady(dm: data.DataModel): void {
@@ -41,9 +52,13 @@ class Application extends core.Component {
         const table = new stats.Table(dm);
         this.appendChild(table);
     }
+
+    public sendMsg(msg: data.Msg): void {
+        this.connection.sendMsg(msg);
+    }
 }
 
 
 window.onload = () => {
-    new Application();
+    (window as any).application = new Application();
 }

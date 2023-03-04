@@ -45,12 +45,11 @@ namespace connection {
 
             var reader = new FileReader();
             reader.onload = () => {
-
                 const message = JSON.parse(reader.result as string) as data.Msg;
                 switch (message.msgType) {
 
                     case MessageType.Subscribe:
-                        this.subscriptionHandler(message as data.Snapshot)
+                        this.subscriptionHandler(message as data.SnapshotMsg)
 
                     case MessageType.Insert:
                         this.insertHandler(message as data.InsertMsg);
@@ -92,35 +91,39 @@ namespace connection {
             }
 
             this.subscribers[topic].push(subscriber);
+
+            this.ws.send(connection.MessageType.Subscribe + topic);
         }
 
 
-        private addModel(): void {
+        public sendMsg(msg: data.Msg): void {
 
+            this.ws.send(msg.msgType + JSON.stringify(msg));
         }
 
 
-        private subscriptionHandler(message: data.Snapshot): void {
+        private insertModel(message: data.InsertMsg): void {
+            this.lookup[message.topic] = new DataModel(message.topic, message.data);
+            if (message.parentTopic) {
+                this.lookup[message.parentTopic] && this.lookup[message.parentTopic].insert(this.lookup[message.topic]);
+            }
+
+            for (const topic in message.children) {
+                this.insertModel(message.children[topic]);
+            }
+
+        }
+
+        private subscriptionHandler(message: data.SnapshotMsg): void {
             debugger;
 
-            this.lookup[message.topic] = new DataModel(message.topic, message.data);
-            for (const topic in message.children) {
-                
-                const child = message.children[topic];
-                this.lookup[topic] = new DataModel(child.topic, child.data);
-                this.lookup[message.topic].insert(this.lookup[topic]);
-
-                if (child.parentTopic) {
-                    this.lookup[child.parentTopic] && this.lookup[child.parentTopic].insert(this.lookup[topic]);
-                }
-
-                if (child.children) {
-                    for (const c of child.children) {
-                        this.lookup[c.topic] = new DataModel(c.topic, c.data);
-                        this.lookup[topic].insert(this.lookup[c.topic]);
-                    }
-                }
+            const snapshot = message.data;
+            if (!snapshot.topic) {
+                console.error(`subscription error for topic: ${message.topic}`);
+                return;
             }
+
+            this.insertModel(snapshot);
 
             for (const s of this.subscribers[message.topic]) {
                 s.subscriptionReady(this.lookup[message.topic]);
@@ -130,9 +133,7 @@ namespace connection {
         }
 
         private insertHandler(message: data.InsertMsg): void {
-            const dm = new DataModel(message.topic, message.data);
-            this.lookup[message.topic] = dm;
-            this.lookup[message.parentTopic] && this.lookup[message.parentTopic].insert(dm);
+            this.insertModel(message);
         }
 
         private updateHandler(message: data.UpdateMsg): void {

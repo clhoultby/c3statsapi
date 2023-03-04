@@ -1,7 +1,6 @@
 package data
 
 import (
-	"encoding/json"
 	"fmt"
 	"sync"
 )
@@ -71,20 +70,19 @@ func (c *Char) Topic() string {
 	return fmt.Sprintf("C%v", c.ID)
 }
 
-func (c *Char) Data() json.RawMessage {
-	out, err := json.Marshal(c)
-	if err != nil {
-		fmt.Printf("char err %v", err)
+func (c *Char) Data() map[string]string {
+	return map[string]string{
+		"id":   fmt.Sprint(c.ID),
+		"img":  c.ImgURL,
+		"name": c.Name,
 	}
-
-	return out
 }
 
 // Stat is a
 type Stat struct {
 	Mutex      sync.Mutex `json:"-"`
-	StatTypeID int        `json:"id"`
-	CharID     int        `json:"cId"`
+	StatTypeID string     `json:"id"`
+	CharID     string     `json:"cId"`
 	Value      string     `json:"value"`
 	Name       string     `json:"name"`
 }
@@ -93,13 +91,13 @@ func (s *Stat) Topic() string {
 	return fmt.Sprintf("S%v_C%v", s.StatTypeID, s.CharID)
 }
 
-func (s *Stat) Data() json.RawMessage {
-	out, err := json.Marshal(s)
-	if err != nil {
-		fmt.Printf("stat err %v", err)
+func (s *Stat) Data() map[string]string {
+	return map[string]string{
+		"id":    s.StatTypeID,
+		"name":  s.Name,
+		"value": s.Value,
+		"cId":   s.CharID,
 	}
-
-	return out
 }
 
 func (s *Stat) Update(value string) {
@@ -110,8 +108,9 @@ func (s *Stat) Update(value string) {
 
 func NewStat(statTypeID int, charId int, name, value string) *Stat {
 	return &Stat{
-		CharID: charId,
-		Name:   name,
-		Value:  value,
+		StatTypeID: fmt.Sprint(statTypeID),
+		CharID:     fmt.Sprint(charId),
+		Name:       name,
+		Value:      value,
 	}
 }

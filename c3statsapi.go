@@ -8,6 +8,7 @@ import (
 
 	"c3statsapi/data"
 	"c3statsapi/publisher"
+	"c3statsapi/stats"
 )
 
 var wsUpgrader = websocket.Upgrader{}
@@ -16,18 +17,29 @@ func main() {
 
 	var port string
 	flag.StringVar(&port, "port", "8080", "http port")
-
 	flag.Parse()
 
-	populateStats()
+	// API Initialisation
+	chars := data.GetCharacters()
+	stats.Init(chars)
 
+	go publisher.Listen()
+
+	// Web Handlers
 	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fs)
+	http.Handle("/", cors(fs))
 
 	http.HandleFunc("/connect", wsConnectionHandler)
 
 	http.ListenAndServe(":"+port, nil)
 
+}
+
+func cors(fs http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		fs.ServeHTTP(w, r)
+	}
 }
 
 func wsConnectionHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,31 +51,4 @@ func wsConnectionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	publisher.AddConnection(ws)
-}
-
-func populateStats() {
-
-	topics := []*publisher.Topic{}
-
-	for _, c := range data.GetCharacters() {
-
-		t := &publisher.Topic{
-			ID:   c.Topic(),
-			Data: c.Data(),
-		}
-
-		topics = append(topics, t)
-		for _, s := range c.Stats {
-			st := &publisher.Topic{
-				ID:          s.Topic(),
-				ParentTopic: c.Topic(),
-				Data:        s.Data(),
-			}
-
-			t.AddChild(st)
-		}
-	}
-
-	publisher.InitialPopulate(topics)
-
 }

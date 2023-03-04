@@ -1,4 +1,21 @@
-.stats-StatCell{
+.stats-Table {
+    display: flex;
+    flex-direction: column;
+}
+
+.stats-StatRow {
+    display: flex;
+}
+
+.stats-CharCell {
+    width: 25%;
+}
+
+.stats-StatHeader_charcell {
+    width: 25%;
+}
+
+.stats-StatCell {
     text-align: center;
     padding: 8px;
 }
@@ -6,4 +23,9 @@
 .stats-StatHeader_cell {
     font-weight: bold;
     padding: 16px;
+    width: 10%;
+}
+
+.stats-StatCell {
+    width: 10%;
 }

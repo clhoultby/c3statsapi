@@ -3,7 +3,7 @@ namespace stats {
 
 
         constructor(dm: data.DataModel) {
-            super(dm, "tr");
+            super(dm);
         }
 
         protected render(): void {

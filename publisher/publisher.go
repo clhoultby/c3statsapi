@@ -11,26 +11,28 @@ import (
 	"c3statsapi/data"
 )
 
-type Topic struct {
-	Mutex       sync.Mutex      `json:"-"`
-	ID          string          `json:"topic"`
-	ParentTopic string          `json:"PT,omitempty"`
-	Data        json.RawMessage `json:"data"`
-	Children    []*Topic        `json:"children,omitempty"`
+var connections = &Connections{
+	connections: make(map[string]*Subscriber),
 }
-
-func (t *Topic) AddChild(child *Topic) {
-	t.Mutex.Lock()
-	defer t.Mutex.Unlock()
-
-	t.Children = append(t.Children, child)
-}
-
-var connections = &Connections{}
 
 type Connections struct {
 	sync.Mutex
-	connections []*websocket.Conn
+	connections map[string]*Subscriber
+}
+
+var pubChan = make(chan []byte, 1000)
+
+func Listen() {
+
+	for m := range pubChan {
+		b := m
+		for _, s := range connections.connections {
+			s.c.WriteMessage(2, b)
+		}
+
+		fmt.Printf("message: %s", b)
+	}
+
 }
 
 var tree = &Tree{
@@ -38,7 +40,7 @@ var tree = &Tree{
 }
 
 type Tree struct {
-	Mutex  sync.Mutex
+	Mutex  sync.RWMutex
 	Topics map[string]*Topic
 }
 
@@ -47,33 +49,37 @@ var (
 	snapshotCacheInvalidated int32 = 1
 )
 
-func InitialPopulate(topics []*Topic) {
-
-	for _, t := range topics {
-		tree.Topics[t.ID] = t
-	}
-
-	tree.Snapshot()
-
-	go publish()
-
-}
-
-func (t *Tree) Snapshot() []byte {
-	t.Mutex.Lock()
-	defer t.Mutex.Unlock()
+func (t *Tree) Snapshot(topicID string) []byte {
+	t.Mutex.RLock()
+	defer t.Mutex.RUnlock()
 
 	if snapshotCacheInvalidated != 1 {
 		return snapshotCache
 	}
 
-	msg := data.SnapshotMsg{
-		MsgType:  data.MsgIDSnapshot,
-		TopicID:  "stats",
-		Children: tree.Topics,
+	var response data.SnapshotMsg
+
+	topic, ok := tree.Topics[topicID]
+	if !ok {
+
+		// return an empty message
+		response = data.SnapshotMsg{
+			MsgType: data.MsgIDSnapshot,
+			TopicID: topicID,
+			Data: &Topic{
+				ID: topicID,
+			},
+		}
+	} else {
+
+		response = data.SnapshotMsg{
+			MsgType: data.MsgIDSnapshot,
+			TopicID: topicID,
+			Data:    topic,
+		}
 	}
 
-	out, err := json.Marshal(msg)
+	out, err := json.Marshal(&response)
 	if err != nil {
 		fmt.Printf("err:%v", err)
 	}
@@ -83,31 +89,35 @@ func (t *Tree) Snapshot() []byte {
 	return snapshotCache
 }
 
-func Insert(t *Topic) {
+func (tree *Tree) InsertTopic(t *Topic) {
 	tree.Mutex.Lock()
 	defer tree.Mutex.Unlock()
 
-	if t.ParentTopic != "" {
-		tree.Topics[t.ParentTopic].AddChild(t)
-	} else {
-		tree.Topics[t.ID] = t
+	// if we already have a topic, we're in a strange state
+	if _, ok := tree.Topics[t.ID]; ok {
+		return
 	}
 
-	msg := data.InsertMsg{
-		MsgType:     data.MsgIDInsert,
-		TopicID:     t.ID,
-		ParentTopic: t.ParentTopic,
-		Data:        t.Data,
-	}
-
-	out, _ := json.Marshal(msg)
-
-	pubChan <- out
+	tree.Topics[t.ID] = t
 
 	atomic.SwapInt32(&snapshotCacheInvalidated, 1)
 }
 
-func Update(topic string, newData []byte) {
+func (tree *Tree) UpdateTopic(topic string, newData map[string]string) {
+	tree.Mutex.RLock()
+	defer tree.Mutex.RUnlock()
+
+	if _, ok := tree.Topics[topic]; !ok {
+		return
+	}
+
+	tree.Topics[topic].Update(newData)
+	atomic.SwapInt32(&snapshotCacheInvalidated, 1)
+}
+
+// DeleteTopic removes a topic from teh tree and recursively removes
+// any child of that topic
+func (tree *Tree) DeleteTopic(topic string) {
 	tree.Mutex.Lock()
 	defer tree.Mutex.Unlock()
 
@@ -115,58 +125,29 @@ func Update(topic string, newData []byte) {
 		return
 	}
 
-	tree.Topics[topic].Data = newData
+	tree.Topics[topic].Delete()
 
-	msg := data.UpdateMsg{
-		MsgType: data.MsgIDUpdate,
-		TopicID: topic,
-		Data:    newData,
-	}
-
-	out, _ := json.Marshal(msg)
-	pubChan <- out
-
-	atomic.SwapInt32(&snapshotCacheInvalidated, 1)
-}
-
-func Delete(topic string) {
-	tree.Mutex.Lock()
-	defer tree.Mutex.Unlock()
-
-	if _, ok := tree.Topics[topic]; !ok {
-		return
+	for _, c := range tree.Topics[topic].Children {
+		delete(tree.Topics, c.ID)
 	}
 
 	delete(tree.Topics, topic)
 
-	msg := data.DeleteMsg{
-		MsgType: data.MsgIDDelete,
-		TopicID: topic,
-	}
-
-	out, _ := json.Marshal(msg)
-	pubChan <- out
-
 	atomic.SwapInt32(&snapshotCacheInvalidated, 1)
 }
 
+// AddConnection
 func AddConnection(c *websocket.Conn) {
 	connections.Mutex.Lock()
 	defer connections.Mutex.Unlock()
 
-	c.WriteMessage(2, []byte(tree.Snapshot()))
-	connections.connections = append(connections.connections, c)
-}
-
-var pubChan = make(chan []byte, 1000)
-
-func publish() {
-
-	for m := range pubChan {
-		b := m
-		for _, c := range connections.connections {
-			c.WriteMessage(2, b)
-		}
+	s := &Subscriber{
+		ID: c.RemoteAddr().String(),
+		c:  c,
 	}
+
+	connections.connections[s.ID] = s
+
+	go s.Listen()
 
 }
