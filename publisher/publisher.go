@@ -2,6 +2,7 @@ package publisher
 
 import (
 	"encoding/json"
+	"fmt"
 	"sync"
 	"sync/atomic"
 
@@ -11,13 +12,13 @@ import (
 	"c3statsapi/log"
 )
 
-var connections = &Connections{
-	connections: make(map[string]*Subscriber),
+var subscribers = &Subscribers{
+	subscriber: make(map[string]ISubscriber),
 }
 
-type Connections struct {
+type Subscribers struct {
 	sync.Mutex
-	connections map[string]*Subscriber
+	subscriber map[string]ISubscriber
 }
 
 var pubChan = make(chan []byte, 1000)
@@ -26,8 +27,8 @@ func Listen() {
 
 	for m := range pubChan {
 		b := m
-		for _, s := range connections.connections {
-			s.c.WriteMessage(2, b)
+		for _, s := range subscribers.subscriber {
+			s.Update(b)
 		}
 
 		log.Logf("message: %s", b)
@@ -48,6 +49,52 @@ var (
 	snapshotCache            []byte
 	snapshotCacheInvalidated int32 = 1
 )
+
+func SaveState() {
+	tree.Mutex.RLock()
+	defer tree.Mutex.RUnlock()
+
+	s, ok := tree.Topics["STATS"]
+	if !ok {
+		return
+	}
+
+	chars := s.Children
+
+	out, err := json.Marshal(chars)
+	if err != nil {
+		fmt.Printf("SaveState error marshalling chars error=%v", err)
+	}
+
+	data.Write(out)
+
+}
+
+func RestoreFromFile() {
+	b, err := data.Read()
+	if err != nil {
+		fmt.Printf("error restoring from file error=%v", err)
+		return
+	}
+
+	NewTopic("STATS")
+
+	var chars []*Topic
+	err = json.Unmarshal(b, &chars)
+	if err != nil {
+		fmt.Printf("error umarshalling restored data error=%v", err)
+		return
+	}
+
+	for _, v := range chars {
+		tree.InsertTopic(v)
+
+		for _, c := range v.Children {
+			tree.InsertTopic(c)
+		}
+	}
+
+}
 
 func (t *Tree) Snapshot(topicID string) []byte {
 	t.Mutex.RLock()
@@ -85,6 +132,7 @@ func (t *Tree) Snapshot(topicID string) []byte {
 	}
 
 	snapshotCache = out
+	atomic.SwapInt32(&snapshotCacheInvalidated, 0)
 
 	return snapshotCache
 }
@@ -99,6 +147,13 @@ func (tree *Tree) InsertTopic(t *Topic) {
 	}
 
 	tree.Topics[t.ID] = t
+
+	if t.ParentTopic != "" {
+		parent, ok := tree.Topics[t.ParentTopic]
+		if ok {
+			parent.AddChild(t)
+		}
+	}
 
 	atomic.SwapInt32(&snapshotCacheInvalidated, 1)
 }
@@ -138,15 +193,15 @@ func (tree *Tree) DeleteTopic(topic string) {
 
 // AddConnection
 func AddConnection(c *websocket.Conn) {
-	connections.Mutex.Lock()
-	defer connections.Mutex.Unlock()
+	subscribers.Mutex.Lock()
+	defer subscribers.Mutex.Unlock()
 
-	s := &Subscriber{
+	s := &Connection{
 		ID: c.RemoteAddr().String(),
 		c:  c,
 	}
 
-	connections.connections[s.ID] = s
+	subscribers.subscriber[s.ID] = s
 
 	go s.Listen()
 

@@ -7,9 +7,7 @@ import (
 
 	"github.com/gorilla/websocket"
 
-	"c3statsapi/data"
 	"c3statsapi/publisher"
-	"c3statsapi/stats"
 )
 
 var (
@@ -31,8 +29,10 @@ func main() {
 	flag.Parse()
 
 	// API Initialisation
-	chars := data.GetCharacters()
-	stats.Init(chars)
+	// chars := data.GetCharacters()
+	// stats.Init(chars)
+
+	publisher.RestoreFromFile()
 
 	go publisher.Listen()
 
@@ -40,8 +40,11 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", NoCache(cors(fs)))
 
-	http.HandleFunc("/connect", wsConnectionHandler)
+	http.HandleFunc("/save", func(w http.ResponseWriter, r *http.Request) {
+		publisher.SaveState()
+	})
 
+	http.HandleFunc("/connect", wsConnectionHandler)
 	http.ListenAndServe(":"+port, nil)
 
 }

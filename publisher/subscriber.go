@@ -9,12 +9,21 @@ import (
 	"c3statsapi/log"
 )
 
-type Subscriber struct {
+type ISubscriber interface {
+	Listen()
+	Update(b []byte)
+}
+
+type Connection struct {
 	ID string
 	c  *websocket.Conn
 }
 
-func (s *Subscriber) Listen() {
+func (c *Connection) Update(b []byte) {
+	c.c.WriteMessage(2, b)
+}
+
+func (s *Connection) Listen() {
 
 	for {
 
@@ -59,6 +68,6 @@ func (s *Subscriber) Listen() {
 
 	}
 
-	delete(connections.connections, s.ID)
+	delete(subscribers.subscriber, s.ID)
 
 }

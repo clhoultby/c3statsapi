@@ -113,6 +113,7 @@ var connection;
             var reader = new FileReader();
             reader.onload = () => {
                 const message = JSON.parse(reader.result);
+                console.log(message);
                 switch (message.msgType) {
                     case connection.MessageType.Subscribe:
                         this.subscriptionHandler(message);
@@ -373,8 +374,9 @@ var stats;
             this.addStyle("stats-StatCell");
             this.element.setAttribute("inputmode", "numeric");
             this.element.value = this.model.data["value"];
-            this.element.onblur = e => this.onChangeHandler(e);
+            this.element.onblur = e => this.onBlurHandler(e);
             this.element.onfocus = e => this.element.value = "";
+            this.element.onkeyup = e => this.onKeyUpHandler(e);
         }
         update(data) {
             this.setText(data["value"]);
@@ -388,9 +390,18 @@ var stats;
                 this.element.value = text;
             });
         }
-        onChangeHandler(e) {
+        onKeyUpHandler(e) {
+            if (e.key === "Enter") {
+                this.element.blur();
+            }
+        }
+        onBlurHandler(e) {
             const v = this.element.value && this.element.value.trim();
-            if (!v) {
+            if (isNaN(+v - parseFloat(v))) {
+                this.element.value = this.model.data["value"];
+                return;
+            }
+            else if (!v) {
                 this.element.value = this.model.data["value"];
                 return;
             }
@@ -469,9 +480,12 @@ var stats;
             const children = this.model.getChildren();
             const statDescColumn = new stats.StatDescColumn(children[0]);
             this.appendChild(statDescColumn);
+            const scrollcontainer = new core.Component();
+            scrollcontainer.addStyle("table-ScrollContainer");
             for (let i = 1; i < children.length; i++) {
-                this.appendChild(new stats.CharColumn(children[i]));
+                scrollcontainer.appendChild(new stats.CharColumn(children[i]));
             }
+            this.appendChild(scrollcontainer);
         }
     }
     stats.Table = Table;
@@ -506,8 +520,11 @@ class Application extends core.Component {
         this.appendChild(new header.Header());
     }
     subscriptionReady(dm) {
+        const scrollcontainer = new core.Component();
+        scrollcontainer.addStyle("application_container");
+        this.appendChild(scrollcontainer);
         const table = new stats.Table(dm);
-        this.appendChild(table);
+        scrollcontainer.appendChild(table);
     }
     sendMsg(msg) {
         this.connection.sendMsg(msg);

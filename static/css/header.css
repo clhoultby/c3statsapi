@@ -4,22 +4,30 @@
     height: 120px;
     border-bottom: 3px #b90202 solid;
     width: 100%;
+    flex-direction: column;
+}
+
+@media screen and (min-width: 1200px) {
+    .header-Header {
+        flex-direction: row;
+    }
+    
 }
 
 .header-Header_logo {
     background-image: url("/img/dnd_logo.png");
     background-repeat: no-repeat;
-    height: 99%;
-    flex: 0 1 50%;
-    min-width: 410px;
+    min-width: 100%;
     background-position-y: center;
+    background-size: cover;
+    flex: 1;
 }
 
 .header-Header_container {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    flex: 1;
     flex-wrap: wrap;
 }
 

@@ -46,6 +46,8 @@ namespace connection {
             var reader = new FileReader();
             reader.onload = () => {
                 const message = JSON.parse(reader.result as string) as data.Msg;
+                console.log(message);
+                
                 switch (message.msgType) {
 
                     case MessageType.Subscribe:

@@ -14,9 +14,14 @@ namespace stats {
             const statDescColumn = new StatDescColumn(children[0]);
             this.appendChild(statDescColumn);
 
-            for (let i = 1; i <  children.length; i++) {
-                this.appendChild(new CharColumn(children[i]));
+            const scrollcontainer = new core.Component();
+            scrollcontainer.addStyle("table-ScrollContainer");
+            
+            for (let i = 1; i < children.length; i++) {
+                scrollcontainer.appendChild(new CharColumn(children[i]));
             }
+
+            this.appendChild(scrollcontainer)
         }
     }
 }

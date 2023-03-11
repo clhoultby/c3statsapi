@@ -35,8 +35,7 @@ func NewTopicWithData(id string, data map[string]string) *Topic {
 	return t
 }
 
-// AddChild can be used separately to Insert to allow us to populate
-// initial model state without sending deltass
+// AddChild can be used separately to Insert to allow us to populate initial model state without sending deltas
 func (t *Topic) AddChild(child *Topic) {
 	t.Mutex.Lock()
 	defer t.Mutex.Unlock()

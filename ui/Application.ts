@@ -50,8 +50,12 @@ class Application extends core.Component {
     }
 
     public subscriptionReady(dm: data.DataModel): void {
+        const scrollcontainer = new core.Component();
+        scrollcontainer.addStyle("application_container");
+        this.appendChild(scrollcontainer);
+        
         const table = new stats.Table(dm);
-        this.appendChild(table);
+        scrollcontainer.appendChild(table);
     }
 
     public sendMsg(msg: data.Msg): void {
