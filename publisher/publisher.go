@@ -77,7 +77,7 @@ func RestoreFromFile() {
 		return
 	}
 
-	NewTopic("STATS")
+	s := NewTopic("STATS")
 
 	var chars []*Topic
 	err = json.Unmarshal(b, &chars)
@@ -88,6 +88,7 @@ func RestoreFromFile() {
 
 	for _, v := range chars {
 		tree.InsertTopic(v)
+		s.AddChild(v)
 
 		for _, c := range v.Children {
 			tree.InsertTopic(c)
@@ -147,13 +148,6 @@ func (tree *Tree) InsertTopic(t *Topic) {
 	}
 
 	tree.Topics[t.ID] = t
-
-	if t.ParentTopic != "" {
-		parent, ok := tree.Topics[t.ParentTopic]
-		if ok {
-			parent.AddChild(t)
-		}
-	}
 
 	atomic.SwapInt32(&snapshotCacheInvalidated, 1)
 }

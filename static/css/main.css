@@ -77,6 +77,16 @@ body {
     }
 }
 
+.stats-StatDescColumn_header {
+    height: 60px;
+}
+
+@media screen and (min-width: 761px) {
+    .stats-StatDescColumn_header {
+        height: 80px;
+    }
+}
+
 .stats-StatDescColumn_header,
 .stats-StatDescCell,
 .stats-StatCell{

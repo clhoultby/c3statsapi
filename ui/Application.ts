@@ -30,9 +30,13 @@ class Application extends core.Component {
 
     public onWsDisconnect(): void {
 
-        document.body.removeChild(this.element);
-         // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
-         this.connection = new connection.WebSocketConnection(
+        try {
+            document.body.removeChild(this.element);
+        } catch (e) {
+
+        }
+        // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
+        this.connection = new connection.WebSocketConnection(
             {
                 onReady: () => this.onWSReady(),
                 onError: () => this.onWsError(),
@@ -53,7 +57,7 @@ class Application extends core.Component {
         const scrollcontainer = new core.Component();
         scrollcontainer.addStyle("application_container");
         this.appendChild(scrollcontainer);
-        
+
         const table = new stats.Table(dm);
         scrollcontainer.appendChild(table);
     }
