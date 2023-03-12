@@ -1,4 +1,10 @@
 # c3statsapi
 
 ## UI Build
-tsc --build
+node build.js
+
+
+## TODO
+- Fix reconnection JS error
+- Lost connection warning message
+- Reconnection - only tear down when reconnection completed
