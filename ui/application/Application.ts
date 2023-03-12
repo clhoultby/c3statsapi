@@ -7,9 +7,12 @@ class Application extends core.Component {
 
     private reconnectID: number = -1;
 
+    private scrollContainer: core.Component;
+
     constructor() {
         super();
 
+        document.body.appendChild(this.element);
 
         // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
         this.connection = new connection.WebSocketConnection(
@@ -22,6 +25,7 @@ class Application extends core.Component {
         );
 
         this.connection.connnect();
+        this.appendChild(new header.Header());
     }
 
 
@@ -35,7 +39,7 @@ class Application extends core.Component {
         console.error("WS disconnect: attempting reconnect");
 
         try {
-            document.body.removeChild(this.element);
+            this.scrollContainer && this.removeChild(this.scrollContainer);
         } catch (e) {
 
         }
@@ -69,11 +73,8 @@ class Application extends core.Component {
     }
 
     public onWSReady(): void {
-        document.body.appendChild(this.element);
-
         this.connection.subscribe("STATS", this);
-        this.appendChild(new header.Header());
-
+        
         if (this.reconnectID !== -1) {
             window.clearTimeout(this.reconnectID);
             this.reconnectID = -1;
@@ -81,12 +82,12 @@ class Application extends core.Component {
     }
 
     public subscriptionReady(dm: data.DataModel): void {
-        const scrollcontainer = new core.Component();
-        scrollcontainer.addStyle("application_container");
-        this.appendChild(scrollcontainer);
+        this.scrollContainer = new core.Component();
+        this.scrollContainer.addStyle("application_container");
+        this.appendChild(this.scrollContainer);
 
         const table = new stats.Table(dm);
-        scrollcontainer.appendChild(table);
+        this.scrollContainer.appendChild(table);
     }
 
     public sendMsg(msg: data.Msg): void {
