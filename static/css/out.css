@@ -241,5 +241,5 @@ body {
 
 .stats-Table_ScrollContainer {
     display: flex;
-    overflow: scroll;
+    overflow: auto;
 }
