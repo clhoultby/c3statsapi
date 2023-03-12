@@ -27,6 +27,10 @@ namespace stats {
             secondName.setText(this.model.data["secondName"] || "");
             container.appendChild(secondName);
 
+            this.element.onclick = e => {
+                Locator.navigationManager.navigateTo("#CO");
+            };
+
             this.appendChild(container);
         }
 

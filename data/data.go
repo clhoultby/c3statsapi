@@ -32,12 +32,12 @@ const (
 
 var model = &DataModel{
 	characters: []*Char{
-		NewChar(0, "Aldrick", "Wright"),
-		NewChar(1, "Aranris", "Mistarelthwin"),
-		NewChar(2, "Hoots", ""),
-		NewChar(3, "Kdaav", "Paal Vadu"),
-		NewChar(4, "Elendar", "Mor"),
-		NewChar(5, "Ofeliya", "Wolfram"),
+		NewChar(0, "Aldrick", "Wright", "Hill Dwarf", "Artificer", "2"),
+		NewChar(1, "Aranris", "Mistarelthwin", "Wood Elf", "Ranger", "2"),
+		NewChar(2, "Hoots", "", "Owlin", "Fighter", "2"),
+		NewChar(3, "Kdaav", "Paal Vadu", "Feral Tiefling", "Monk", "2"),
+		NewChar(4, "Elendar", "Mor", "Drow", "Rogue", "2"),
+		NewChar(5, "Ofeliya", "Wolfram", "Half-Elf", "Sorcerer", "2"),
 	},
 }
 
@@ -59,12 +59,15 @@ func (m *DataModel) AddChar(c *Char) {
 	m.characters = append(m.characters, c)
 }
 
-func NewChar(id int, name string, secondName string) *Char {
+func NewChar(id int, name string, secondName string, race string, class string, level string) *Char {
 	return &Char{
 		ID:         id,
 		FirstName:  name,
 		SecondName: secondName,
 		ImgURL:     fmt.Sprintf("/img/char_%v.jpg", strings.ToLower(name)),
+		Level:      level,
+		Race:       race,
+		Class:      class,
 		Stats: []*Stat{
 			NewStat(StatTypeHits, id, "Hits", "0"),
 			NewStat(StatTypeCrits, id, "Crits", "0"),
@@ -102,7 +105,10 @@ type Char struct {
 	ID         int        `json:"id"`
 	ImgURL     string     `json:"img"`
 	FirstName  string     `json:"name"`
-	SecondName string     `json:"second_name"`
+	SecondName string     `json:"secondname"`
+	Race       string     `json:"race"`
+	Class      string     `json:"class"`
+	Level      string     `json:"level"`
 	Stats      []*Stat    `json:"stats"`
 }
 

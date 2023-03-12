@@ -9,11 +9,9 @@ namespace connection {
     }
 
     export class WebSocketConnection {
+
         private ws: WebSocket;
-
-        private subscribers = new Map<topic, ISubscriber[]>();
-        private lookup = (window as any).lookup = new Map<topic, DataModel>();
-
+        private subscribers: Lookup<ISubscriber[]> = {};
 
         constructor(
             // Delegate, only want one to handle the connect and reconnect 
@@ -51,7 +49,8 @@ namespace connection {
                 switch (message.msgType) {
 
                     case MessageType.Subscribe:
-                        this.subscriptionHandler(message as data.SnapshotMsg)
+                        this.subscriptionHandler(message as data.SnapshotMsg);
+                        break;
 
                     case MessageType.Insert:
                         this.insertHandler(message as data.InsertMsg);
@@ -83,8 +82,10 @@ namespace connection {
         }
 
         public subscribe(topic: topic, subscriber: ISubscriber) {
-            if (this.lookup[topic]) {
-                subscriber.subscriptionReady(this.lookup[topic]);
+            console.log("subscribe: " + topic);
+
+            if (Locator.lookup[topic]) {
+                subscriber.subscriptionReady(Locator.lookup[topic]);
                 return;
             }
 
@@ -99,19 +100,18 @@ namespace connection {
 
 
         public sendMsg(msg: data.Msg): void {
-
             this.ws.send(msg.msgType + JSON.stringify(msg));
         }
 
 
         private insertModel(message: data.InsertMsg): void {
-            this.lookup[message.topic] = new DataModel(message.topic, message.data);
+            Locator.lookup[message.topic] = new DataModel(message.topic, message.data);
             if (message.parentTopic) {
-                this.lookup[message.parentTopic] && this.lookup[message.parentTopic].insert(this.lookup[message.topic]);
+                Locator.lookup[message.parentTopic] && Locator.lookup[message.parentTopic].insert(Locator.lookup[message.topic]);
             }
 
-            for (const topic in message.children) {
-                this.insertModel(message.children[topic]);
+            for (const c of message.children || []) {
+                this.insertModel(c);
             }
 
         }
@@ -123,10 +123,12 @@ namespace connection {
                 return;
             }
 
+            console.log(JSON.stringify(snapshot));
+
             this.insertModel(snapshot);
 
             for (const s of this.subscribers[message.topic]) {
-                s.subscriptionReady(this.lookup[message.topic]);
+                s.subscriptionReady(Locator.lookup[message.topic]);
             }
 
             this.subscribers[message.topic] = [];
@@ -138,7 +140,7 @@ namespace connection {
 
         private updateHandler(message: data.UpdateMsg): void {
 
-            const model = this.lookup[message.topic];
+            const model = Locator.lookup[message.topic];
             if (!model) {
                 console.error("update: model not present for topic=" + message.topic);
                 return;
@@ -148,12 +150,12 @@ namespace connection {
         }
 
         private deleteHandler(message: data.DeleteMsg): void {
-            const model = this.lookup[message.topic];
+            const model = Locator.lookup[message.topic];
             if (!model) {
                 console.error("delete: model not present for topic=" + message.topic);
             }
             model.delete();
-            delete this.lookup[message.topic];
+            delete Locator.lookup[message.topic];
         }
 
     }

@@ -1,0 +1,20 @@
+.co-Character {
+    display: flex;
+    margin-top: 50px;
+    width: 100%;
+}
+
+.co-Character_Header {
+    display: flex;
+    height: 150px;
+}
+
+.co-Character_Image {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+    border-radius: 1px;
+    flex: 0 1 100%;
+}

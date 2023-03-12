@@ -31,7 +31,7 @@ var data;
         addDelegate(d) {
             this.delegates.push(d);
         }
-        removeDelete(d) {
+        removeDelegate(d) {
             const i = this.delegates.indexOf(d);
             if (i === -1) {
                 return;
@@ -73,129 +73,6 @@ var data;
     }
     data_2.DataModel = DataModel;
 })(data || (data = {}));
-var connection;
-(function (connection) {
-    let MessageType;
-    (function (MessageType) {
-        MessageType[MessageType["Subscribe"] = 0] = "Subscribe";
-        MessageType[MessageType["Insert"] = 1] = "Insert";
-        MessageType[MessageType["Update"] = 2] = "Update";
-        MessageType[MessageType["Delete"] = 3] = "Delete";
-    })(MessageType = connection.MessageType || (connection.MessageType = {}));
-})(connection || (connection = {}));
-var connection;
-(function (connection) {
-    var DataModel = data.DataModel;
-    class WebSocketConnection {
-        constructor(
-        // Delegate, only want one to handle the connect and reconnect 
-        delegate, 
-        // Websocket API endPoint
-        url = "ws://localhost:8080/connect") {
-            this.delegate = delegate;
-            this.url = url;
-            this.subscribers = new Map();
-            this.lookup = window.lookup = new Map();
-        }
-        connnect() {
-            this.ws = new WebSocket(this.url);
-            this.ws.onopen = () => {
-                console.log('WebSocket connection established');
-                this.delegate.onReady();
-            };
-            this.ws.onerror = (event) => {
-                console.log(`WebSocket error: ${event}`);
-                this.delegate.onError();
-            };
-            this.ws.onclose = () => {
-                this.delegate.onDisconnnect();
-            };
-            var reader = new FileReader();
-            reader.onload = () => {
-                const message = JSON.parse(reader.result);
-                console.log(message);
-                switch (message.msgType) {
-                    case connection.MessageType.Subscribe:
-                        this.subscriptionHandler(message);
-                    case connection.MessageType.Insert:
-                        this.insertHandler(message);
-                        break;
-                    case connection.MessageType.Update:
-                        this.updateHandler(message);
-                        break;
-                    case connection.MessageType.Delete:
-                        this.deleteHandler(message);
-                        break;
-                    default:
-                        console.log(`Unknown message type: ${message}`);
-                        break;
-                }
-            };
-            this.ws.onmessage = (event) => {
-                if (!event.data) {
-                    console.error("missing data");
-                    return;
-                }
-                reader.readAsBinaryString(event.data);
-            };
-        }
-        subscribe(topic, subscriber) {
-            if (this.lookup[topic]) {
-                subscriber.subscriptionReady(this.lookup[topic]);
-                return;
-            }
-            if (!this.subscribers[topic]) {
-                this.subscribers[topic] = [];
-            }
-            this.subscribers[topic].push(subscriber);
-            this.ws.send(connection.MessageType.Subscribe + topic);
-        }
-        sendMsg(msg) {
-            this.ws.send(msg.msgType + JSON.stringify(msg));
-        }
-        insertModel(message) {
-            this.lookup[message.topic] = new DataModel(message.topic, message.data);
-            if (message.parentTopic) {
-                this.lookup[message.parentTopic] && this.lookup[message.parentTopic].insert(this.lookup[message.topic]);
-            }
-            for (const topic in message.children) {
-                this.insertModel(message.children[topic]);
-            }
-        }
-        subscriptionHandler(message) {
-            const snapshot = message.data;
-            if (!snapshot.topic) {
-                console.error(`subscription error for topic: ${message.topic}`);
-                return;
-            }
-            this.insertModel(snapshot);
-            for (const s of this.subscribers[message.topic]) {
-                s.subscriptionReady(this.lookup[message.topic]);
-            }
-            this.subscribers[message.topic] = [];
-        }
-        insertHandler(message) {
-            this.insertModel(message);
-        }
-        updateHandler(message) {
-            const model = this.lookup[message.topic];
-            if (!model) {
-                console.error("update: model not present for topic=" + message.topic);
-                return;
-            }
-            model.update(message.data);
-        }
-        deleteHandler(message) {
-            const model = this.lookup[message.topic];
-            if (!model) {
-                console.error("delete: model not present for topic=" + message.topic);
-            }
-            model.delete();
-            delete this.lookup[message.topic];
-        }
-    }
-    connection.WebSocketConnection = WebSocketConnection;
-})(connection || (connection = {}));
 var core;
 (function (core) {
     class Component {
@@ -281,21 +158,151 @@ var core;
         delete() {
         }
         sendUpdate(u) {
-            let application;
-            application = window.application;
-            if (!application) {
-                debugger;
-                return;
-            }
-            application.sendMsg(u);
+            Locator.connection.sendMsg(u);
         }
         dispose() {
-            this.model.removeDelete(this);
+            this.model.removeDelegate(this);
             super.dispose();
         }
     }
     core.DataComponent = DataComponent;
 })(core || (core = {}));
+var core;
+(function (core) {
+    class Page extends core.Component {
+        render() {
+            this.addStyle("core-Page");
+        }
+        navigateTo(topic) {
+        }
+    }
+    core.Page = Page;
+})(core || (core = {}));
+var connection;
+(function (connection) {
+    let MessageType;
+    (function (MessageType) {
+        MessageType[MessageType["Subscribe"] = 0] = "Subscribe";
+        MessageType[MessageType["Insert"] = 1] = "Insert";
+        MessageType[MessageType["Update"] = 2] = "Update";
+        MessageType[MessageType["Delete"] = 3] = "Delete";
+    })(MessageType = connection.MessageType || (connection.MessageType = {}));
+})(connection || (connection = {}));
+var connection;
+(function (connection) {
+    var DataModel = data.DataModel;
+    class WebSocketConnection {
+        constructor(
+        // Delegate, only want one to handle the connect and reconnect 
+        delegate, 
+        // Websocket API endPoint
+        url = "ws://localhost:8080/connect") {
+            this.delegate = delegate;
+            this.url = url;
+            this.subscribers = {};
+        }
+        connnect() {
+            this.ws = new WebSocket(this.url);
+            this.ws.onopen = () => {
+                console.log('WebSocket connection established');
+                this.delegate.onReady();
+            };
+            this.ws.onerror = (event) => {
+                console.log(`WebSocket error: ${event}`);
+                this.delegate.onError();
+            };
+            this.ws.onclose = () => {
+                this.delegate.onDisconnnect();
+            };
+            var reader = new FileReader();
+            reader.onload = () => {
+                const message = JSON.parse(reader.result);
+                console.log(message);
+                switch (message.msgType) {
+                    case connection.MessageType.Subscribe:
+                        this.subscriptionHandler(message);
+                        break;
+                    case connection.MessageType.Insert:
+                        this.insertHandler(message);
+                        break;
+                    case connection.MessageType.Update:
+                        this.updateHandler(message);
+                        break;
+                    case connection.MessageType.Delete:
+                        this.deleteHandler(message);
+                        break;
+                    default:
+                        console.log(`Unknown message type: ${message}`);
+                        break;
+                }
+            };
+            this.ws.onmessage = (event) => {
+                if (!event.data) {
+                    console.error("missing data");
+                    return;
+                }
+                reader.readAsBinaryString(event.data);
+            };
+        }
+        subscribe(topic, subscriber) {
+            console.log("subscribe: " + topic);
+            if (Locator.lookup[topic]) {
+                subscriber.subscriptionReady(Locator.lookup[topic]);
+                return;
+            }
+            if (!this.subscribers[topic]) {
+                this.subscribers[topic] = [];
+            }
+            this.subscribers[topic].push(subscriber);
+            this.ws.send(connection.MessageType.Subscribe + topic);
+        }
+        sendMsg(msg) {
+            this.ws.send(msg.msgType + JSON.stringify(msg));
+        }
+        insertModel(message) {
+            Locator.lookup[message.topic] = new DataModel(message.topic, message.data);
+            if (message.parentTopic) {
+                Locator.lookup[message.parentTopic] && Locator.lookup[message.parentTopic].insert(Locator.lookup[message.topic]);
+            }
+            for (const c of message.children || []) {
+                this.insertModel(c);
+            }
+        }
+        subscriptionHandler(message) {
+            const snapshot = message.data;
+            if (!snapshot.topic) {
+                console.error(`subscription error for topic: ${message.topic}`);
+                return;
+            }
+            console.log(JSON.stringify(snapshot));
+            this.insertModel(snapshot);
+            for (const s of this.subscribers[message.topic]) {
+                s.subscriptionReady(Locator.lookup[message.topic]);
+            }
+            this.subscribers[message.topic] = [];
+        }
+        insertHandler(message) {
+            this.insertModel(message);
+        }
+        updateHandler(message) {
+            const model = Locator.lookup[message.topic];
+            if (!model) {
+                console.error("update: model not present for topic=" + message.topic);
+                return;
+            }
+            model.update(message.data);
+        }
+        deleteHandler(message) {
+            const model = Locator.lookup[message.topic];
+            if (!model) {
+                console.error("delete: model not present for topic=" + message.topic);
+            }
+            model.delete();
+            delete Locator.lookup[message.topic];
+        }
+    }
+    connection.WebSocketConnection = WebSocketConnection;
+})(connection || (connection = {}));
 var header;
 (function (header) {
     var Component = core.Component;
@@ -348,6 +355,9 @@ var stats;
             secondName.addStyle(this.baseStyle + "_secondname");
             secondName.setText(this.model.data["secondName"] || "");
             container.appendChild(secondName);
+            this.element.onclick = e => {
+                Locator.navigationManager.navigateTo("#CO");
+            };
             this.appendChild(container);
         }
     }
@@ -477,6 +487,22 @@ var stats;
 })(stats || (stats = {}));
 var stats;
 (function (stats) {
+    class StatsPage extends core.Page {
+        render() {
+            this.addStyle("stats-StatsPage");
+        }
+        navigateTo(topic) {
+            Locator.connection.subscribe("STATS", this);
+        }
+        subscriptionReady(dm) {
+            const table = new stats.Table(dm);
+            this.appendChild(table);
+        }
+    }
+    stats.StatsPage = StatsPage;
+})(stats || (stats = {}));
+var stats;
+(function (stats) {
     class Table extends core.DataComponent {
         constructor(dm) {
             super(dm);
@@ -497,19 +523,123 @@ var stats;
     }
     stats.Table = Table;
 })(stats || (stats = {}));
+var characteroverview;
+(function (characteroverview) {
+    var DataComponent = core.DataComponent;
+    var Component = core.Component;
+    class Character extends DataComponent {
+        constructor() {
+            super(...arguments);
+            this.baseStyle = "co-Character";
+        }
+        render() {
+            this.addStyle(this.baseStyle);
+            const header = new Component();
+            header.addStyle(this.baseStyle + "_Header");
+            this.appendChild(header);
+            const image = new Component();
+            image.addStyle(this.baseStyle + "_Image");
+            image.getElement().setAttribute("style", `background-image:url("${this.model.data["img"]}")`);
+            header.appendChild(image);
+            const detailsWrapper = new Component();
+            detailsWrapper.addStyle(this.baseStyle + "_Details");
+            header.appendChild(detailsWrapper);
+            const name = new Component();
+            name.addStyle(this.baseStyle + "_Name");
+            name.setText(this.model.data["name"] + " " + this.model.data["secondname"] || "");
+            detailsWrapper.appendChild(name);
+            const classDetails = new Component();
+            classDetails.addStyle(this.baseStyle + "_ClassDetails");
+            detailsWrapper.appendChild(classDetails);
+            const level = new Component();
+            level.addStyle(this.baseStyle + "_Level");
+            level.setText(`Level: ${this.model.data["level"]}`);
+            classDetails.appendChild(level);
+            const classDetailsDivider = new Component();
+            classDetailsDivider.addStyle(this.baseStyle + "_ClassDetailsDivider");
+            classDetailsDivider.setText("|");
+            classDetails.appendChild(classDetailsDivider);
+            const race = new Component();
+            race.addStyle(this.baseStyle + "_Race");
+            race.setText(this.model.data["race"]);
+            classDetails.appendChild(race);
+            const classDescription = new Component();
+            classDescription.addStyle(this.baseStyle + "_ClassDescription");
+            classDescription.setText(this.model.data["class"]);
+            detailsWrapper.appendChild(classDescription);
+        }
+    }
+    characteroverview.Character = Character;
+})(characteroverview || (characteroverview = {}));
+var characteroverview;
+(function (characteroverview) {
+    var Page = core.Page;
+    class CharacterOverviewPage extends Page {
+        render() {
+            super.render();
+            this.addStyle("co-CharacterOverviewPage");
+        }
+        navigateTo(topic) {
+            Locator.connection.subscribe("CO", this);
+        }
+        subscriptionReady(dm) {
+            for (const model of dm.getChildren()) {
+                const c = new characteroverview.Character(model);
+                this.appendChild(c);
+            }
+        }
+    }
+    characteroverview.CharacterOverviewPage = CharacterOverviewPage;
+})(characteroverview || (characteroverview = {}));
+var navigation;
+(function (navigation) {
+    class NavigationManager {
+        constructor() {
+            this.pages = {
+                "STATS": stats.StatsPage,
+                "CO": characteroverview.CharacterOverviewPage
+            };
+        }
+        setRoot(root) {
+            this.root = root;
+            window.onhashchange = e => {
+                const [_, page, topic] = location.hash.split("#");
+                this.navigateTo(page || "#STATS", topic || "");
+            };
+        }
+        navigateTo(key, topic) {
+            if (key.startsWith("#")) {
+                key = key.substring(1);
+            }
+            const page = this.pages[key];
+            if (!page) {
+                console.error("unsupported pageType");
+                return;
+            }
+            if (this.currentPage) {
+                this.root.removeChild(this.currentPage);
+            }
+            this.root.appendChild(this.currentPage = new page());
+            this.currentPage.navigateTo(topic);
+            location.hash = key;
+        }
+    }
+    navigation.NavigationManager = NavigationManager;
+})(navigation || (navigation = {}));
 class Application extends core.Component {
     constructor() {
         super();
         this.reconnectID = -1;
         document.body.appendChild(this.element);
         // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
-        this.connection = new connection.WebSocketConnection({
+        Locator.connection = new connection.WebSocketConnection({
             onReady: () => this.onWSReady(),
             onError: () => this.onWsError(),
             onDisconnnect: () => this.onWsDisconnect(),
         }, "ws://" + document.location.host + "/connect");
-        this.connection.connnect();
+        Locator.connection.connnect();
         this.appendChild(new header.Header());
+        Locator.navigationManager.setRoot(this);
     }
     onWsError() {
         console.error("WS Error: attempting reconnect");
@@ -517,11 +647,6 @@ class Application extends core.Component {
     }
     onWsDisconnect() {
         console.error("WS disconnect: attempting reconnect");
-        try {
-            this.scrollContainer && this.removeChild(this.scrollContainer);
-        }
-        catch (e) {
-        }
         this.reconnect();
     }
     reconnect() {
@@ -534,31 +659,25 @@ class Application extends core.Component {
             this.reconnect();
         }, 2000);
         // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
-        this.connection = new connection.WebSocketConnection({
+        Locator.connection = new connection.WebSocketConnection({
             onReady: () => this.onWSReady(),
             onError: () => this.onWsError(),
             onDisconnnect: () => this.onWsDisconnect(),
         }, "ws://" + document.location.host + "/connect");
-        this.connection.connnect();
+        Locator.connection.connnect();
     }
     onWSReady() {
-        this.connection.subscribe("STATS", this);
+        Locator.navigationManager.navigateTo(location.hash || "#STATS");
         if (this.reconnectID !== -1) {
             window.clearTimeout(this.reconnectID);
             this.reconnectID = -1;
         }
     }
-    subscriptionReady(dm) {
-        this.scrollContainer = new core.Component();
-        this.scrollContainer.addStyle("application_container");
-        this.appendChild(this.scrollContainer);
-        const table = new stats.Table(dm);
-        this.scrollContainer.appendChild(table);
-    }
-    sendMsg(msg) {
-        this.connection.sendMsg(msg);
-    }
 }
 window.onload = () => {
     window.application = new Application();
 };
+class Locator {
+}
+Locator.navigationManager = new navigation.NavigationManager();
+Locator.lookup = {};

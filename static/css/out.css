@@ -6,13 +6,36 @@
 body {
     background-color: aliceblue;
     overflow-x: hidden;
+    margin: 0;
 }
 
 .application_container {
     max-width: 100vw;
     overflow: hidden;
+    margin: 8px;
 }
-.header-Header {
+.co-Character {
+    display: flex;
+    margin-top: 50px;
+    width: 100%;
+}
+
+.co-Character_Header {
+    display: flex;
+    height: 150px;
+}
+
+.co-Character_Image {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+    border-radius: 1px;
+    flex: 0 1 100%;
+}.core-Page {
+    margin: 0 15px;
+}.header-Header {
     display: flex;
     background-color: black;
     height: 120px;
@@ -64,6 +87,7 @@ body {
     font-size: 30px;
 }
 .stats-CharCell {
+    cursor: pointer;
     display: flex;
     justify-content: center;
     border: 2px #b90202 solid;

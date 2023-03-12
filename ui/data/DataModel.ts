@@ -16,7 +16,7 @@
             this.delegates.push(d);
         }
 
-        public removeDelete(d: IDataModelDelegate): void {
+        public removeDelegate(d: IDataModelDelegate): void {
             const i = this.delegates.indexOf(d); 
             if (i === -1) {
                 return;

@@ -8,6 +8,8 @@ import (
 
 	"github.com/gorilla/websocket"
 
+	"c3statsapi/characteroverview"
+	"c3statsapi/data"
 	"c3statsapi/publisher"
 )
 
@@ -30,8 +32,8 @@ func main() {
 	flag.Parse()
 
 	// API Initialisation
-	// chars := data.GetCharacters()
-	// stats.Init(chars)
+	chars := data.GetCharacters()
+	characteroverview.Init(chars)
 
 	publisher.RestoreFromFile()
 

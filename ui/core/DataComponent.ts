@@ -24,22 +24,11 @@ namespace core {
 
 
         protected sendUpdate( u: data.UpdateMsg): void {
-            let application: {
-                sendMsg(s: data.Msg): void;
-            };
-            
-            application = (window as any).application;
-
-            if (!application) {
-                debugger;
-                return;
-            }
-
-            application.sendMsg(u);
+            Locator.connection.sendMsg(u);
         }
 
         protected dispose(): void {
-            this.model.removeDelete(this);
+            this.model.removeDelegate(this);
             super.dispose();
         }
 

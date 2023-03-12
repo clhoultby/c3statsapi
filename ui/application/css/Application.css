@@ -6,9 +6,11 @@
 body {
     background-color: aliceblue;
     overflow-x: hidden;
+    margin: 0;
 }
 
 .application_container {
     max-width: 100vw;
     overflow: hidden;
+    margin: 8px;
 }

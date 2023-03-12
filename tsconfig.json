@@ -7,10 +7,12 @@
   "include": [
     "ui/d.ts",
     "ui/data/*.ts",
-    "ui/connection/*.ts",
     "ui/core/*.ts",
+    "ui/connection/*.ts",
     "ui/header/*.ts",
     "ui/stats/*.ts",
+    "ui/characteroverview/*.ts",
+    "ui/navigation/*.ts",
     "ui/application/*.ts"
   ]
 }

@@ -101,9 +101,9 @@ func (t *Tree) Snapshot(topicID string) []byte {
 	t.Mutex.RLock()
 	defer t.Mutex.RUnlock()
 
-	if snapshotCacheInvalidated != 1 {
-		return snapshotCache
-	}
+	// if snapshotCacheInvalidated != 1 {
+	// 	return snapshotCache
+	// }
 
 	var response data.SnapshotMsg
 
