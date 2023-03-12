@@ -14,15 +14,20 @@ namespace stats {
             img.getElement().setAttribute("style", `background-image:url("${this.model.data["img"]}")`)
             this.appendChild(img);
 
+            const container = new Component();
+            container.addStyle(this.baseStyle + "_container");
+
             const name = new Component();
             name.addStyle(this.baseStyle + "_name");
             name.setText(this.model.data["name"]);
-            this.appendChild(name);
+            container.appendChild(name);
 
             const secondName = new Component();
             secondName.addStyle(this.baseStyle + "_secondname");
             secondName.setText(this.model.data["secondName"] || "");
-            this.appendChild(secondName);
+            container.appendChild(secondName);
+
+            this.appendChild(container);
         }
 
     }

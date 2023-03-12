@@ -2,12 +2,14 @@ namespace stats {
 
     export class Table extends core.DataComponent {
 
+        private baseStyle = "stats-Table";
+
         constructor(dm: data.DataModel) {
             super(dm);
         }
 
         protected render() {
-            this.addStyle("stats-Table");
+            this.addStyle(this.baseStyle);
 
             const children = this.model.getChildren();
 
@@ -15,7 +17,7 @@ namespace stats {
             this.appendChild(statDescColumn);
 
             const scrollcontainer = new core.Component();
-            scrollcontainer.addStyle("table-ScrollContainer");
+            scrollcontainer.addStyle(this.baseStyle + "_ScrollContainer");
             
             for (let i = 1; i < children.length; i++) {
                 scrollcontainer.appendChild(new CharColumn(children[i]));

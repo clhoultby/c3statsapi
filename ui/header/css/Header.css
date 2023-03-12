@@ -17,10 +17,11 @@
 .header-Header_logo {
     background-image: url("/img/dnd_logo.png");
     background-repeat: no-repeat;
-    min-width: 100%;
     background-position-y: center;
     background-size: cover;
     flex: 1;
+    max-width: 800px;
+    width: 100%;
 }
 
 .header-Header_container {

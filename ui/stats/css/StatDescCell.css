@@ -1,0 +1,24 @@
+.stats-StatDescCell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 5px;
+    height: 60px;
+    margin: 2px 0;
+    font-size: 11px;
+}
+
+@media only screen and (min-width: 761px) {
+    .stats-StatDescCell {
+        height: 80px;
+        margin: 5px 0;
+        font-size: 13px;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .stats-StatDescCell {
+        font-size: 15px;
+    }
+}

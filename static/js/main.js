@@ -338,14 +338,17 @@ var stats;
             img.addStyle(this.baseStyle + "_img");
             img.getElement().setAttribute("style", `background-image:url("${this.model.data["img"]}")`);
             this.appendChild(img);
+            const container = new Component();
+            container.addStyle(this.baseStyle + "_container");
             const name = new Component();
             name.addStyle(this.baseStyle + "_name");
             name.setText(this.model.data["name"]);
-            this.appendChild(name);
+            container.appendChild(name);
             const secondName = new Component();
             secondName.addStyle(this.baseStyle + "_secondname");
             secondName.setText(this.model.data["secondName"] || "");
-            this.appendChild(secondName);
+            container.appendChild(secondName);
+            this.appendChild(container);
         }
     }
     stats.CharCell = CharCell;
@@ -474,14 +477,15 @@ var stats;
     class Table extends core.DataComponent {
         constructor(dm) {
             super(dm);
+            this.baseStyle = "stats-Table";
         }
         render() {
-            this.addStyle("stats-Table");
+            this.addStyle(this.baseStyle);
             const children = this.model.getChildren();
             const statDescColumn = new stats.StatDescColumn(children[0]);
             this.appendChild(statDescColumn);
             const scrollcontainer = new core.Component();
-            scrollcontainer.addStyle("table-ScrollContainer");
+            scrollcontainer.addStyle(this.baseStyle + "_ScrollContainer");
             for (let i = 1; i < children.length; i++) {
                 scrollcontainer.appendChild(new stats.CharColumn(children[i]));
             }

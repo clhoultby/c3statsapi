@@ -1,0 +1,10 @@
+.stats-Table {
+    margin-top: 20px;
+    display: flex;
+}
+
+.stats-Table_ScrollContainer {
+    display: flex;
+    max-width: calc(100vw - 95px);
+    overflow: scroll;
+}

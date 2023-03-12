@@ -1,0 +1,25 @@
+.stats-StatDescColumn {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    min-width: 60px;
+}
+
+@media only screen and (min-width: 761px) {
+    .stats-StatDescColumn {
+        min-width: 90px;
+    }
+}
+
+.stats-StatDescColumn_header {
+    display: flex;
+    justify-content: center;
+    height: 60px;
+    padding: 5px;
+}
+
+@media screen and (min-width: 761px) {
+    .stats-StatDescColumn_header {
+        height: 80px;
+    }
+}

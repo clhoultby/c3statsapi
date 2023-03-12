@@ -1,0 +1,14 @@
+* {
+    box-sizing: border-box;
+    font-family: Roboto, Helvetica, sans-serif;
+}
+
+body {
+    background-color: aliceblue;
+    overflow-x: hidden;
+}
+
+.application_container {
+    max-width: 100vw;
+    overflow: hidden;
+}

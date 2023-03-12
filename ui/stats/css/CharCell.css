@@ -1,0 +1,58 @@
+.stats-CharCell {
+    display: flex;
+    justify-content: center;
+    border: 2px #b90202 solid;
+    border-radius: 3px;
+    align-items: center;
+    background-color: #fff;
+    min-width: 60px;
+    height: 60px;
+    font-size: 11px;
+}
+
+@media only screen and (min-width: 761px) {
+    .stats-CharCell {
+        min-width: 80px;
+        height: 80px;
+    }
+}
+
+.stats-CharCell_img {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
+    width: 100%;
+    border-radius: 1px;
+    flex: 0 1 100%;
+}
+
+@media only screen and (min-width: 761px) {
+    .stats-CharCell_img {
+        width: 75px;
+        background-size: 75px;
+    }
+}
+
+@media only screen and (min-width: 1200px) {
+    .stats-CharCell_img {
+        background-position-x: left;
+        margin: 2px;
+    }
+}
+
+
+.stats-CharCell_name {
+    display: none;
+}
+
+@media only screen and (min-width: 1200px) {
+    .stats-CharCell_name,
+    .stats-CharCell_secondname {
+        display: flex;
+        flex-wrap: wrap;
+        flex: 1;
+        font-size: 20px;
+        padding-right: 10px;
+    }
+}

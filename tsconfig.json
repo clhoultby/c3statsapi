@@ -5,12 +5,12 @@
     "rootDir": "./",
   },
   "include": [
-    "./ui/d.ts",
-    "./ui/data/*.ts",
-    "./ui/connection/*.ts",
-    "./ui/core/*.ts",
-    "./ui/header/*.ts",
-    "./ui/stats/*.ts",
-    "./ui/Application.ts"
+    "ui/d.ts",
+    "ui/data/*.ts",
+    "ui/connection/*.ts",
+    "ui/core/*.ts",
+    "ui/header/*.ts",
+    "ui/stats/*.ts",
+    "ui/application/*.ts"
   ]
 }

@@ -1,3 +1,17 @@
+* {
+    box-sizing: border-box;
+    font-family: Roboto, Helvetica, sans-serif;
+}
+
+body {
+    background-color: aliceblue;
+    overflow-x: hidden;
+}
+
+.application_container {
+    max-width: 100vw;
+    overflow: hidden;
+}
 .header-Header {
     display: flex;
     background-color: black;
@@ -17,10 +31,11 @@
 .header-Header_logo {
     background-image: url("/img/dnd_logo.png");
     background-repeat: no-repeat;
-    min-width: 100%;
     background-position-y: center;
     background-size: cover;
     flex: 1;
+    max-width: 800px;
+    width: 100%;
 }
 
 .header-Header_container {
@@ -48,108 +63,16 @@
 .header-Header_subtitle {
     font-size: 30px;
 }
-* {
-    box-sizing: border-box;
-    font-family: Roboto, Helvetica, sans-serif;
-}
-
-body {
-    background-color: aliceblue;
-    overflow-x: hidden;
-}
-
-.application_container {
-    max-width: 100vw;
-    overflow: hidden;
-}
-
-.stats-Table {
-    margin-top: 20px;
-    display: flex;
-}
-
-.table-ScrollContainer {
-    display: flex;
-    width: calc(100vw - 95px);
-    overflow: scroll;
-}
-
-.stats-StatRow {
-    display: flex;
-}
-
-.stats-StatDescColumn,
-.stats-CharColumn {
-    display: flex;
-    flex-direction: column;
-    margin-top: 10px;
-    min-width: 60px;
-    font-size: 11px;
-}
-
-@media only screen and (min-width: 761px) {
-
-    .stats-StatDescColumn,
-    .stats-CharColumn {
-        min-width: 90px;
-    }
-
-}
-
-.stats-CharColumn {
-    margin: 10px;
-    flex: 1;
-    width: 12.5%;
-}
-
-.stats-CharCell,
-.stats-StatDescColumn_header,
-.stats-StatCell,
-.stats-StatDescCell {
+.stats-CharCell {
     display: flex;
     justify-content: center;
-
-}
-
-.stats-StatCell,
-.stats-StatDescCell {
-    height: 60px;
-    margin: 2px 0;
-
-}
-
-@media only screen and (min-width: 761px) {
-
-    .stats-StatCell,
-    .stats-StatDescCell {
-        height: 80px;
-        margin: 5px 0;
-    }
-}
-
-.stats-StatDescColumn_header {
-    height: 60px;
-}
-
-@media screen and (min-width: 761px) {
-    .stats-StatDescColumn_header {
-        height: 80px;
-    }
-}
-
-.stats-StatDescColumn_header,
-.stats-StatDescCell,
-.stats-StatCell{
-    padding: 5px;
-}
-
-.stats-CharCell {
     border: 2px #b90202 solid;
     border-radius: 3px;
     align-items: center;
     background-color: #fff;
     min-width: 60px;
     height: 60px;
+    font-size: 11px;
 }
 
 @media only screen and (min-width: 761px) {
@@ -168,53 +91,67 @@ body {
     border-radius: 1px;
     flex: 0 1 100%;
 }
-@media only screen and (min-width: 1200px) {
-    .stats-CharCell_img {
-        width: 107px;
-    }
-}
 
 @media only screen and (min-width: 761px) {
     .stats-CharCell_img {
+        width: 75px;
         background-size: 75px;
     }
 }
+
+@media only screen and (min-width: 1200px) {
+    .stats-CharCell_img {
+        background-position-x: left;
+        margin: 2px;
+    }
+}
+
 
 .stats-CharCell_name {
     display: none;
 }
 
 @media only screen and (min-width: 1200px) {
-
     .stats-CharCell_name,
     .stats-CharCell_secondname {
-        display: block;
+        display: flex;
         flex-wrap: wrap;
-        width: 50%;
         flex: 1;
         font-size: 20px;
         padding-right: 10px;
     }
+}.stats-CharColumn {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    min-width: 60px;
+    margin: 10px;
+    flex: 1;
+    width: 12.5%;
+    max-width: 200px;
+}
 
-    .stats-CharCell_img {
-        background-position-x: left;
+@media only screen and (min-width: 761px) {
+    .stats-CharColumn {
+        min-width: 90px;
     }
-}
-
-.stats-StatDescCell {
-    align-items: center;
-    text-align: center;
-}
-
-.stats-StatHeader_charcell {
-    width: 25%;
-}
-
-.stats-StatCell {
+}.stats-StatCell {
+    display: flex;
+    justify-content: center;
     text-align: center;
     border-radius: 2px;
     font-size: 11px;
     background-color: #fff;
+    padding: 5px;
+    height: 60px;
+    margin: 2px 0;
+}
+
+@media only screen and (min-width: 761px) {
+    .stats-StatCell {
+        height: 80px;
+        margin: 5px 0;
+    }
 }
 
 @media only screen and (min-width: 1200px) {
@@ -242,10 +179,60 @@ body {
         background-color: #fff;
     }
 }
+.stats-StatDescCell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 5px;
+    height: 60px;
+    margin: 2px 0;
+    font-size: 11px;
+}
 
+@media only screen and (min-width: 761px) {
+    .stats-StatDescCell {
+        height: 80px;
+        margin: 5px 0;
+        font-size: 13px;
+    }
+}
 
-.stats-StatHeader_cell {
-    font-weight: bold;
-    padding: 16px;
-    width: 10%;
+@media only screen and (min-width: 1200px) {
+    .stats-StatDescCell {
+        font-size: 15px;
+    }
+}.stats-StatDescColumn {
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    min-width: 60px;
+}
+
+@media only screen and (min-width: 761px) {
+    .stats-StatDescColumn {
+        min-width: 90px;
+    }
+}
+
+.stats-StatDescColumn_header {
+    display: flex;
+    justify-content: center;
+    height: 60px;
+    padding: 5px;
+}
+
+@media screen and (min-width: 761px) {
+    .stats-StatDescColumn_header {
+        height: 80px;
+    }
+}.stats-Table {
+    margin-top: 20px;
+    display: flex;
+}
+
+.stats-Table_ScrollContainer {
+    display: flex;
+    max-width: calc(100vw - 95px);
+    overflow: scroll;
 }
