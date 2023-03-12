@@ -525,12 +525,32 @@ var stats;
 })(stats || (stats = {}));
 var characteroverview;
 (function (characteroverview) {
+    var Page = core.Page;
+    class CharacterOverviewPage extends Page {
+        render() {
+            super.render();
+            this.addStyle("co-CharacterOverviewPage");
+        }
+        navigateTo(topic) {
+            Locator.connection.subscribe("CO", this);
+        }
+        subscriptionReady(dm) {
+            for (const model of dm.getChildren()) {
+                const c = new characteroverview.OVCharacter(model);
+                this.appendChild(c);
+            }
+        }
+    }
+    characteroverview.CharacterOverviewPage = CharacterOverviewPage;
+})(characteroverview || (characteroverview = {}));
+var characteroverview;
+(function (characteroverview) {
     var DataComponent = core.DataComponent;
     var Component = core.Component;
-    class Character extends DataComponent {
+    class OVCharacter extends DataComponent {
         constructor() {
             super(...arguments);
-            this.baseStyle = "co-Character";
+            this.baseStyle = "co-OVCharacter";
         }
         render() {
             this.addStyle(this.baseStyle);
@@ -553,7 +573,7 @@ var characteroverview;
             detailsWrapper.appendChild(classDetails);
             const level = new Component();
             level.addStyle(this.baseStyle + "_Level");
-            level.setText(`Level: ${this.model.data["level"]}`);
+            level.setText(`Level ${this.model.data["level"]}`);
             classDetails.appendChild(level);
             const classDetailsDivider = new Component();
             classDetailsDivider.addStyle(this.baseStyle + "_ClassDetailsDivider");
@@ -567,29 +587,66 @@ var characteroverview;
             classDescription.addStyle(this.baseStyle + "_ClassDescription");
             classDescription.setText(this.model.data["class"]);
             detailsWrapper.appendChild(classDescription);
+            const health = new Component();
+            health.addStyle(this.baseStyle + "_Health");
+            header.appendChild(health);
+            const healthValue = new Component();
+            healthValue.addStyle(this.baseStyle + "_HealthValue");
+            healthValue.setText(this.model.data["maxhp"]);
+            health.appendChild(healthValue);
+            const healthLabel = new Component();
+            healthLabel.addStyle(this.baseStyle + "_HealthLabel");
+            healthLabel.setText("Max HP");
+            health.appendChild(healthLabel);
+            const passiveStats = new characteroverview.StatsContainer(this.model, 0, 5);
+            passiveStats.addStyle(this.baseStyle + "_Passive");
+            this.appendChild(passiveStats);
+            const attributes = new characteroverview.StatsContainer(this.model, 5, this.model.getChildren().length);
+            attributes.addStyle(this.baseStyle + "_Attributes");
+            this.appendChild(attributes);
         }
     }
-    characteroverview.Character = Character;
+    characteroverview.OVCharacter = OVCharacter;
 })(characteroverview || (characteroverview = {}));
 var characteroverview;
 (function (characteroverview) {
-    var Page = core.Page;
-    class CharacterOverviewPage extends Page {
+    var Component = core.Component;
+    class Stat extends core.DataComponent {
+        constructor() {
+            super(...arguments);
+            this.baseStyle = "co-Stat";
+        }
         render() {
-            super.render();
-            this.addStyle("co-CharacterOverviewPage");
+            this.addStyle(this.baseStyle);
+            const value = new Component();
+            value.addStyle(this.baseStyle + "_Value");
+            value.setText(this.model.data["value"]);
+            this.appendChild(value);
+            const desc = new Component();
+            desc.addStyle(this.baseStyle + "_Desc");
+            desc.setText(this.model.data["desc"]);
+            this.appendChild(desc);
         }
-        navigateTo(topic) {
-            Locator.connection.subscribe("CO", this);
+    }
+    characteroverview.Stat = Stat;
+})(characteroverview || (characteroverview = {}));
+var characteroverview;
+(function (characteroverview) {
+    class StatsContainer extends core.DataComponent {
+        constructor(model, startIndex, endIndex) {
+            super(model);
+            this.startIndex = startIndex;
+            this.endIndex = endIndex;
+            this.baseStyle = "co-StatsContainer";
         }
-        subscriptionReady(dm) {
-            for (const model of dm.getChildren()) {
-                const c = new characteroverview.Character(model);
-                this.appendChild(c);
+        render() {
+            this.addStyle(this.baseStyle);
+            for (let i = this.startIndex; i < this.endIndex; i++) {
+                this.appendChild(new characteroverview.Stat(this.model.getChildren()[i]));
             }
         }
     }
-    characteroverview.CharacterOverviewPage = CharacterOverviewPage;
+    characteroverview.StatsContainer = StatsContainer;
 })(characteroverview || (characteroverview = {}));
 var navigation;
 (function (navigation) {
@@ -602,10 +659,10 @@ var navigation;
         }
         setRoot(root) {
             this.root = root;
-            window.onhashchange = e => {
-                const [_, page, topic] = location.hash.split("#");
-                this.navigateTo(page || "#STATS", topic || "");
-            };
+            // window.onhashchange = e => {
+            //     const [_, page, topic] = location.hash.split("#");
+            //     this.navigateTo(page || "STATS", topic || "");
+            // };
         }
         navigateTo(key, topic) {
             if (key.startsWith("#")) {
@@ -667,7 +724,7 @@ class Application extends core.Component {
         Locator.connection.connnect();
     }
     onWSReady() {
-        Locator.navigationManager.navigateTo(location.hash || "#STATS");
+        Locator.navigationManager.navigateTo(location.hash || "STATS");
         if (this.reconnectID !== -1) {
             window.clearTimeout(this.reconnectID);
             this.reconnectID = -1;

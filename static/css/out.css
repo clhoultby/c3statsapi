@@ -14,27 +14,116 @@ body {
     overflow: hidden;
     margin: 8px;
 }
-.co-Character {
+.co-CharacterOverviewPage {
+    background-color: black;
+}.co-OVCharacter {
     display: flex;
-    margin-top: 50px;
     width: 100%;
+    flex-direction: column;
+    border: 2px darkred solid;
+    padding: 10px;
+    margin: 10px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    color: #585858;
+
 }
 
-.co-Character_Header {
+.co-OVCharacter_Header {
     display: flex;
     height: 150px;
+    flex: 1;
+    border: 0.5px darkred solid;
 }
 
-.co-Character_Image {
+.co-OVCharacter_Image {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    height: 100%;
-    width: 100%;
-    border-radius: 1px;
-    flex: 0 1 100%;
+    height: 75px;
+    width: 75px;
+}
+
+@media screen and (min-width: 1200px) {
+    .co-OVCharacter_Image {
+        height: 75px;
+        width: 75px;
+    }
+}
+
+.co-OVCharacter_Details {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+    flex: 1;
+}
+
+.co-OVCharacter_Health {
+    display: flex;
+    flex-direction: column;
+    font-size: 17px;
+    padding: 15px;
+    width: 90px;
+    background-color: white;
+    justify-content: center;
+}
+
+.co-OVCharacter_HealthValue {
+    text-align: center;
+}
+
+.co-OVCharacter_HealthLabel {
+    font-size: 13px;
+    text-align: center;
+}
+
+.co-OVCharacter_ClassDetails {
+    display: flex;
+    line-height: 25px;   
+}
+
+.co-OVCharacter_Name {
+    font-size: 17px;
+}
+
+.co-OVCharacter_Level {
+    font-size: 11px;
+}
+
+.co-OVCharacter_ClassDetailsDivider {
+    font-size: 17px;
+    color: darkred;
+    padding: 0 5px;
+}
+
+.co-OVCharacter_Race {
+    font-size: 11px;
+}
+
+.co-OVCharacter_ClassDescription {
+    font-size: 11px;
+}.co-Stat {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    height: 50px;
+    justify-content: space-evenly;
+    border-bottom: 1px lightgrey solid;
+    color: #585858;
+}
+
+.co-Stat_Value {
+    text-align: center;
+}
+
+.co-Stat_Desc {
+    text-align: center;
+    font-size: 9px;
+}.co-StatsContainer {
+    display: flex;
+    background-color: white;
 }.core-Page {
-    margin: 0 15px;
 }.header-Header {
     display: flex;
     background-color: black;

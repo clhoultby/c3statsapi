@@ -19,7 +19,7 @@ func Init(data []*data.Char) *publisher.Topic {
 }
 
 func formatChar(c *data.Char) *publisher.Topic {
-	col := publisher.NewTopicWithData(
+	char := publisher.NewTopicWithData(
 		fmt.Sprintf("CO_C%v", c.ID),
 		map[string]string{
 			"name":       c.FirstName,
@@ -28,7 +28,28 @@ func formatChar(c *data.Char) *publisher.Topic {
 			"race":       c.Race,
 			"class":      c.Class,
 			"level":      c.Level,
+			"maxhp":      c.MaxHP,
 		})
 
-	return col
+	for _, attr := range c.PassiveAttributes {
+
+		char.AddChild(publisher.NewTopicWithData(
+			fmt.Sprintf("CO_C%v_A%v", c.ID, attr.TypeID),
+			map[string]string{
+				"desc":  attr.Name,
+				"value": attr.Value,
+			}))
+	}
+
+	for _, attr := range c.Attributes {
+		char.AddChild(publisher.NewTopicWithData(
+			fmt.Sprintf("CO_C%v_A%v", c.ID, attr.TypeID),
+			map[string]string{
+				"desc":  attr.Name,
+				"value": attr.Value,
+			}))
+
+	}
+
+	return char
 }

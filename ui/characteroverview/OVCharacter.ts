@@ -3,9 +3,9 @@ namespace characteroverview {
     import DataComponent = core.DataComponent;
     import Component = core.Component;
 
-    export class Character extends DataComponent {
+    export class OVCharacter extends DataComponent {
 
-        private baseStyle = "co-Character";
+        private baseStyle = "co-OVCharacter";
         
         protected render(): void {
             this.addStyle(this.baseStyle);
@@ -34,7 +34,7 @@ namespace characteroverview {
 
             const level = new Component();
             level.addStyle(this.baseStyle + "_Level");
-            level.setText(`Level: ${this.model.data["level"]}`);
+            level.setText(`Level ${this.model.data["level"]}`);
             classDetails.appendChild(level);
 
             const classDetailsDivider = new Component();
@@ -51,6 +51,28 @@ namespace characteroverview {
             classDescription.addStyle(this.baseStyle + "_ClassDescription");
             classDescription.setText(this.model.data["class"]);
             detailsWrapper.appendChild(classDescription);
+
+            const health = new Component();
+            health.addStyle(this.baseStyle + "_Health");
+            header.appendChild(health);
+
+            const healthValue = new Component();
+            healthValue.addStyle(this.baseStyle + "_HealthValue");
+            healthValue.setText(this.model.data["maxhp"]);
+            health.appendChild(healthValue);
+
+            const healthLabel = new Component();
+            healthLabel.addStyle(this.baseStyle + "_HealthLabel");
+            healthLabel.setText("Max HP");
+            health.appendChild(healthLabel);
+
+            const passiveStats = new StatsContainer(this.model, 0, 5);
+            passiveStats.addStyle(this.baseStyle + "_Passive");
+            this.appendChild(passiveStats);
+
+            const attributes = new StatsContainer(this.model, 5, this.model.getChildren().length);
+            attributes.addStyle(this.baseStyle + "_Attributes");
+            this.appendChild(attributes);
         }
 
     }

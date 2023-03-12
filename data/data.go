@@ -2,7 +2,6 @@ package data
 
 import (
 	"fmt"
-	"strings"
 	"sync"
 )
 
@@ -30,111 +29,55 @@ const (
 	StatTypeIntSaveFail       = 20
 )
 
-var model = &DataModel{
-	characters: []*Char{
-		NewChar(0, "Aldrick", "Wright", "Hill Dwarf", "Artificer", "2"),
-		NewChar(1, "Aranris", "Mistarelthwin", "Wood Elf", "Ranger", "2"),
-		NewChar(2, "Hoots", "", "Owlin", "Fighter", "2"),
-		NewChar(3, "Kdaav", "Paal Vadu", "Feral Tiefling", "Monk", "2"),
-		NewChar(4, "Elendar", "Mor", "Drow", "Rogue", "2"),
-		NewChar(5, "Ofeliya", "Wolfram", "Half-Elf", "Sorcerer", "2"),
-	},
-}
-
-type DataModel struct {
-	Mutex      sync.Mutex
-	characters []*Char
-}
+const (
+	AttrTypePassivePerception    = 0
+	AttrTypePassiveInvestigation = 1
+	AttrTypePassiveInsight       = 2
+	AttrTypeStrength             = 3
+	AttrTypeDexterity            = 4
+	AttrTypeConsitution          = 5
+	AttrTypeIntelligence         = 6
+	AttrTypeWisdom               = 7
+	AttrTypeCharisma             = 8
+	AttrTypeDarkVision           = 9
+	AttrTypeArmorClass           = 10
+	AttrTypeWalkingSpeed         = 11
+)
 
 func GetCharacters() []*Char {
-	model.Mutex.Lock()
-	defer model.Mutex.Unlock()
-
-	return model.characters
-}
-
-func (m *DataModel) AddChar(c *Char) {
-	m.Mutex.Lock()
-	defer m.Mutex.Unlock()
-	m.characters = append(m.characters, c)
-}
-
-func NewChar(id int, name string, secondName string, race string, class string, level string) *Char {
-	return &Char{
-		ID:         id,
-		FirstName:  name,
-		SecondName: secondName,
-		ImgURL:     fmt.Sprintf("/img/char_%v.jpg", strings.ToLower(name)),
-		Level:      level,
-		Race:       race,
-		Class:      class,
-		Stats: []*Stat{
-			NewStat(StatTypeHits, id, "Hits", "0"),
-			NewStat(StatTypeCrits, id, "Crits", "0"),
-			NewStat(StatTypeDamage, id, "Damage", "0"),
-			NewStat(StatTypeKills, id, "Kills", "0"),
-			NewStat(StatTypeHPLost, id, "HP Lost", "0"),
-			NewStat(StatTypeHealedAlly, id, "Healed Ally", "0"),
-			NewStat(StatTypeKOs, id, "KOs", "0"),
-			// StatTypeDeathSaveSuccess:  NewStat(StatTypeDeathSaveSuccess, id, "Death Saves Suceeded", "0"),
-			// StatTypeDeathSaveFail:     NewStat(StatTypeDeathSaveFail, id, "Death Saves Failed", "0"),
-			// StatTypePerceptionSuccess: NewStat(StatTypePerceptionSuccess, id, "Perception Success", "0"),
-			// StatTypePerceptionFail:    NewStat(StatTypePerceptionFail, id, "Perception failures", "0"),
-			// StatTypeWizSaveSuccess:    NewStat(StatTypeWizSaveSuccess, id, "Wiz Saves Success", "0"),
-			// StatTypeWizSaveFail:       NewStat(StatTypeWizSaveFail, id, "Wiz Save failures", "0"),
-			// StatTypeConSaveSuccess:    NewStat(StatTypeConSaveSuccess, id, "Con Save Success", "0"),
-			// StatTypeConSaveFail:       NewStat(StatTypeConSaveFail, id, "Con Save failures", "0"),
-			// StatTypeDexSaveSuccess:    NewStat(StatTypeDexSaveSuccess, id, "Dex Save Success", "0"),
-			// StatTypeDexSaveFail:       NewStat(StatTypeDexSaveFail, id, "Dex Save failures", "0"),
-			// StatTypeStrSaveSuccess:    NewStat(StatTypeStrSaveSuccess, id, "Str Save Success", "0"),
-			// StatTypeStrSaveFail:       NewStat(StatTypeStrSaveFail, id, "Str Save failures", "0"),
-			// StatTypeIntSaveSuccess:    NewStat(StatTypeIntSaveSuccess, id, "Int Save Success", "0"),
-			// StatTypeIntSaveFail:       NewStat(StatTypeIntSaveFail, id, "Int Save failures", "0"),
-		},
+	return []*Char{
+		Aldrick(),
+		Aranris(),
+		Hoots(),
+		KPV(),
+		Elendar(),
+		Ofeliya(),
 	}
-}
 
-func (c *Char) AddStat(typeID int, name string, value string) {
-	c.Mutex.Lock()
-	defer c.Mutex.Unlock()
-	c.Stats[typeID] = NewStat(typeID, c.ID, name, value)
 }
 
 type Char struct {
-	Mutex      sync.Mutex `json:"-"`
-	ID         int        `json:"id"`
-	ImgURL     string     `json:"img"`
-	FirstName  string     `json:"name"`
-	SecondName string     `json:"secondname"`
-	Race       string     `json:"race"`
-	Class      string     `json:"class"`
-	Level      string     `json:"level"`
-	Stats      []*Stat    `json:"stats"`
+	Mutex             sync.Mutex   `json:"-"`
+	ID                int          `json:"id"`
+	ImgURL            string       `json:"img"`
+	FirstName         string       `json:"name"`
+	SecondName        string       `json:"secondname"`
+	Race              string       `json:"race"`
+	Class             string       `json:"class"`
+	Level             string       `json:"level"`
+	MaxHP             string       `json:"maxhp"`
+	Stats             []*Stat      `json:"stats"`
+	PassiveAttributes []*Attribute `json:"passive_attributes"`
+	Attributes        []*Attribute `json:"attributes"`
 }
 
-func (c *Char) Topic() string {
-	return fmt.Sprintf("C%v", c.ID)
-}
-
-func (c *Char) Data() map[string]string {
-	return map[string]string{
-		"id":   fmt.Sprint(c.ID),
-		"img":  c.ImgURL,
-		"name": c.FirstName,
-	}
-}
-
-// Stat is a
+// Stat is a dynamically updatable object
 type Stat struct {
 	Mutex      sync.Mutex `json:"-"`
 	StatTypeID string     `json:"id"`
 	CharID     string     `json:"cId"`
 	Value      string     `json:"value"`
 	Name       string     `json:"name"`
-}
-
-func (s *Stat) Topic() string {
-	return fmt.Sprintf("S%v_C%v", s.StatTypeID, s.CharID)
 }
 
 func (s *Stat) Data() map[string]string {
@@ -159,4 +102,12 @@ func NewStat(statTypeID int, charId int, name, value string) *Stat {
 		Name:       name,
 		Value:      value,
 	}
+}
+
+type Attribute struct {
+	Mutex  sync.Mutex `json:"-"`
+	TypeID string     `json:"id"`
+	CharID string     `json:"cId"`
+	Value  string     `json:"value"`
+	Name   string     `json:"name"`
 }

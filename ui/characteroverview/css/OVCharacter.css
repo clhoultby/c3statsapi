@@ -1,0 +1,88 @@
+.co-OVCharacter {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    border: 2px darkred solid;
+    padding: 10px;
+    margin: 10px;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    color: #585858;
+
+}
+
+.co-OVCharacter_Header {
+    display: flex;
+    height: 150px;
+    flex: 1;
+    border: 0.5px darkred solid;
+}
+
+.co-OVCharacter_Image {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 75px;
+    width: 75px;
+}
+
+@media screen and (min-width: 1200px) {
+    .co-OVCharacter_Image {
+        height: 75px;
+        width: 75px;
+    }
+}
+
+.co-OVCharacter_Details {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    padding: 5px;
+    flex: 1;
+}
+
+.co-OVCharacter_Health {
+    display: flex;
+    flex-direction: column;
+    font-size: 17px;
+    padding: 15px;
+    width: 90px;
+    background-color: white;
+    justify-content: center;
+}
+
+.co-OVCharacter_HealthValue {
+    text-align: center;
+}
+
+.co-OVCharacter_HealthLabel {
+    font-size: 13px;
+    text-align: center;
+}
+
+.co-OVCharacter_ClassDetails {
+    display: flex;
+    line-height: 25px;   
+}
+
+.co-OVCharacter_Name {
+    font-size: 17px;
+}
+
+.co-OVCharacter_Level {
+    font-size: 11px;
+}
+
+.co-OVCharacter_ClassDetailsDivider {
+    font-size: 17px;
+    color: darkred;
+    padding: 0 5px;
+}
+
+.co-OVCharacter_Race {
+    font-size: 11px;
+}
+
+.co-OVCharacter_ClassDescription {
+    font-size: 11px;
+}

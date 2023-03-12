@@ -17,7 +17,7 @@ namespace characteroverview {
         public subscriptionReady(dm: data.DataModel): void {
 
             for (const model of dm.getChildren()) {
-                const c = new Character(model);
+                const c = new OVCharacter(model);
                 this.appendChild(c);
             }
         }

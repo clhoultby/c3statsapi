@@ -18,10 +18,10 @@ namespace navigation {
         public setRoot(root: core.Component) {
             this.root = root;
 
-            window.onhashchange = e => {
-                const [_, page, topic] = location.hash.split("#");
-                this.navigateTo(page || "#STATS", topic || "");
-            };
+            // window.onhashchange = e => {
+            //     const [_, page, topic] = location.hash.split("#");
+            //     this.navigateTo(page || "STATS", topic || "");
+            // };
         }
 
         public navigateTo(key: string, topic?: string): void {
@@ -45,8 +45,5 @@ namespace navigation {
             location.hash = key;
         }
 
-
-
     }
-
 }

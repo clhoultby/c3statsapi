@@ -63,7 +63,7 @@ class Application extends core.Component {
     }
 
     public onWSReady(): void {
-        Locator.navigationManager.navigateTo(location.hash || "#STATS");
+        Locator.navigationManager.navigateTo(location.hash || "STATS");
 
         if (this.reconnectID !== -1) {
             window.clearTimeout(this.reconnectID);
