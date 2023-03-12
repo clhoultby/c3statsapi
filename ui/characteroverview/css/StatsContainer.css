@@ -1,4 +1,9 @@
 .co-StatsContainer {
     display: flex;
-    background-color: white;
+    border-bottom: 1px lightgrey solid;
+    justify-content: space-evenly;
+}
+
+.co-StatsContainer:last-child {
+    border: 0;
 }

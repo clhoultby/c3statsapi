@@ -15,7 +15,7 @@ func Aldrick() *Char {
 		PassiveAttributes: []*Attribute{
 			{TypeID: fmt.Sprint(AttrTypeArmorClass), Name: "Armor Class", Value: "18"},
 			{TypeID: fmt.Sprint(AttrTypePassivePerception), Name: "Passive Perception", Value: "10"},
-			{TypeID: fmt.Sprint(AttrTypePassiveInvestigation), Name: "Passive Investigation", Value: "14"},
+			{TypeID: fmt.Sprint(AttrTypePassiveInvestigation), Name: "Passive Invest.", Value: "14"},
 			{TypeID: fmt.Sprint(AttrTypePassiveInsight), Name: "Passive Insight", Value: "10"},
 			{TypeID: fmt.Sprint(AttrTypeDarkVision), Name: "Dark Vision", Value: "60"},
 		},

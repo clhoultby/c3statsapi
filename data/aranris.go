@@ -15,7 +15,7 @@ func Aranris() *Char {
 		PassiveAttributes: []*Attribute{
 			{TypeID: fmt.Sprint(AttrTypeArmorClass), Name: "Armor Class", Value: "14"},
 			{TypeID: fmt.Sprint(AttrTypePassivePerception), Name: "Passive Perception", Value: "15"},
-			{TypeID: fmt.Sprint(AttrTypePassiveInvestigation), Name: "Passive Investigation", Value: "12"},
+			{TypeID: fmt.Sprint(AttrTypePassiveInvestigation), Name: "Passive Invest.", Value: "12"},
 			{TypeID: fmt.Sprint(AttrTypePassiveInsight), Name: "Passive Insight", Value: "15"},
 			{TypeID: fmt.Sprint(AttrTypeDarkVision), Name: "Dark Vision", Value: "60"},
 		},

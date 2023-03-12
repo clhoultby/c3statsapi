@@ -14,26 +14,20 @@ body {
     overflow: hidden;
     margin: 8px;
 }
-.co-CharacterOverviewPage {
-    background-color: black;
-}.co-OVCharacter {
+.co-OVCharacter {
     display: flex;
     width: 100%;
     flex-direction: column;
-    border: 2px darkred solid;
-    padding: 10px;
-    margin: 10px;
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
+    border-top: 1px darkred solid;
+    border-bottom: 2px darkred solid;
     color: #585858;
-
 }
 
 .co-OVCharacter_Header {
     display: flex;
     height: 150px;
     flex: 1;
-    border: 0.5px darkred solid;
+    border-bottom: 0.5px darkred solid;
 }
 
 .co-OVCharacter_Image {
@@ -54,7 +48,6 @@ body {
 .co-OVCharacter_Details {
     display: flex;
     flex-direction: column;
-    background-color: white;
     padding: 5px;
     flex: 1;
 }
@@ -63,14 +56,13 @@ body {
     display: flex;
     flex-direction: column;
     font-size: 17px;
-    padding: 15px;
+    padding: 10px;
     width: 90px;
-    background-color: white;
-    justify-content: center;
 }
 
 .co-OVCharacter_HealthValue {
     text-align: center;
+    font-weight: bold;
 }
 
 .co-OVCharacter_HealthLabel {
@@ -103,13 +95,13 @@ body {
 
 .co-OVCharacter_ClassDescription {
     font-size: 11px;
-}.co-Stat {
+}
+.co-Stat {
     display: flex;
     flex-direction: column;
     padding: 5px;
     height: 50px;
     justify-content: space-evenly;
-    border-bottom: 1px lightgrey solid;
     color: #585858;
 }
 
@@ -122,7 +114,12 @@ body {
     font-size: 9px;
 }.co-StatsContainer {
     display: flex;
-    background-color: white;
+    border-bottom: 1px lightgrey solid;
+    justify-content: space-evenly;
+}
+
+.co-StatsContainer:last-child {
+    border: 0;
 }.core-Page {
 }.header-Header {
     display: flex;

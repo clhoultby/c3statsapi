@@ -2,20 +2,16 @@
     display: flex;
     width: 100%;
     flex-direction: column;
-    border: 2px darkred solid;
-    padding: 10px;
-    margin: 10px;
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
+    border-top: 1px darkred solid;
+    border-bottom: 2px darkred solid;
     color: #585858;
-
 }
 
 .co-OVCharacter_Header {
     display: flex;
     height: 150px;
     flex: 1;
-    border: 0.5px darkred solid;
+    border-bottom: 0.5px darkred solid;
 }
 
 .co-OVCharacter_Image {
@@ -36,7 +32,6 @@
 .co-OVCharacter_Details {
     display: flex;
     flex-direction: column;
-    background-color: white;
     padding: 5px;
     flex: 1;
 }
@@ -45,14 +40,13 @@
     display: flex;
     flex-direction: column;
     font-size: 17px;
-    padding: 15px;
+    padding: 10px;
     width: 90px;
-    background-color: white;
-    justify-content: center;
 }
 
 .co-OVCharacter_HealthValue {
     text-align: center;
+    font-weight: bold;
 }
 
 .co-OVCharacter_HealthLabel {

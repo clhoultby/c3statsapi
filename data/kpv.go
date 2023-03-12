@@ -15,7 +15,7 @@ func KPV() *Char {
 		PassiveAttributes: []*Attribute{
 			{TypeID: fmt.Sprint(AttrTypeArmorClass), Name: "Armor Class", Value: "15"},
 			{TypeID: fmt.Sprint(AttrTypePassivePerception), Name: "Passive Perception", Value: "11"},
-			{TypeID: fmt.Sprint(AttrTypePassiveInvestigation), Name: "Passive Investigation", Value: "13"},
+			{TypeID: fmt.Sprint(AttrTypePassiveInvestigation), Name: "Passive Invest.", Value: "13"},
 			{TypeID: fmt.Sprint(AttrTypePassiveInsight), Name: "Passive Insight", Value: "11"},
 			{TypeID: fmt.Sprint(AttrTypeDarkVision), Name: "Dark Vision", Value: "60"},
 		},
