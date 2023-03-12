@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -58,8 +59,11 @@ func cors(fs http.Handler) http.HandlerFunc {
 
 func NoCache(h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		for k, v := range noCacheHeaders {
-			w.Header().Set(k, v)
+
+		if !strings.Contains(r.RequestURI, "/img/") {
+			for k, v := range noCacheHeaders {
+				w.Header().Set(k, v)
+			}
 		}
 		h.ServeHTTP(w, r)
 	}
