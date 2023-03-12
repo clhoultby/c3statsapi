@@ -2,14 +2,22 @@
     display: flex;
     flex-direction: column;
     margin-top: 10px;
-    min-width: 60px;
+    width: 40px;
 }
 
 @media only screen and (min-width: 761px) {
     .stats-StatDescColumn {
-        min-width: 90px;
+        width: 60px;
     }
 }
+
+@media only screen and (min-width: 1200px) {
+    .stats-StatDescColumn {
+        width: 90px;
+    }
+}
+
+
 
 .stats-StatDescColumn_header {
     display: flex;

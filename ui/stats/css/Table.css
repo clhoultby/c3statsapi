@@ -5,6 +5,5 @@
 
 .stats-Table_ScrollContainer {
     display: flex;
-    max-width: calc(100vw - 95px);
     overflow: scroll;
 }

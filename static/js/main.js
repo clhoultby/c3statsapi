@@ -376,9 +376,9 @@ var stats;
         render() {
             this.addStyle("stats-StatCell");
             this.element.setAttribute("inputmode", "numeric");
+            this.element.setAttribute("type", "number");
             this.element.value = this.model.data["value"];
             this.element.onblur = e => this.onBlurHandler(e);
-            this.element.onfocus = e => this.element.value = "";
             this.element.onkeyup = e => this.onKeyUpHandler(e);
         }
         update(data) {
@@ -399,7 +399,7 @@ var stats;
             }
         }
         onBlurHandler(e) {
-            const v = this.element.value && this.element.value.trim();
+            let v = this.element.value && this.element.value.trim();
             if (isNaN(+v - parseFloat(v))) {
                 this.element.value = this.model.data["value"];
                 return;
@@ -408,7 +408,10 @@ var stats;
                 this.element.value = this.model.data["value"];
                 return;
             }
-            else if (v == this.model.data["value"]) {
+            // remove any prefix 0's
+            v = +v + "";
+            if (v == this.model.data["value"]) {
+                this.element.value = v;
                 return;
             }
             const msg = data.newUpdateMsg(this.model.topic, { "value": v });
