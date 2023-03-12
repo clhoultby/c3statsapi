@@ -501,6 +501,7 @@ class Application extends core.Component {
     constructor() {
         super();
         this.reconnectID = -1;
+        document.body.appendChild(this.element);
         // almost certainly do this better with a proper delegate, don't think we're at risk of losing scope here.
         this.connection = new connection.WebSocketConnection({
             onReady: () => this.onWSReady(),
@@ -508,6 +509,7 @@ class Application extends core.Component {
             onDisconnnect: () => this.onWsDisconnect(),
         }, "ws://" + document.location.host + "/connect");
         this.connection.connnect();
+        this.appendChild(new header.Header());
     }
     onWsError() {
         console.error("WS Error: attempting reconnect");
@@ -516,7 +518,7 @@ class Application extends core.Component {
     onWsDisconnect() {
         console.error("WS disconnect: attempting reconnect");
         try {
-            document.body.removeChild(this.element);
+            this.scrollContainer && this.removeChild(this.scrollContainer);
         }
         catch (e) {
         }
@@ -540,20 +542,18 @@ class Application extends core.Component {
         this.connection.connnect();
     }
     onWSReady() {
-        document.body.appendChild(this.element);
         this.connection.subscribe("STATS", this);
-        this.appendChild(new header.Header());
         if (this.reconnectID !== -1) {
             window.clearTimeout(this.reconnectID);
             this.reconnectID = -1;
         }
     }
     subscriptionReady(dm) {
-        const scrollcontainer = new core.Component();
-        scrollcontainer.addStyle("application_container");
-        this.appendChild(scrollcontainer);
+        this.scrollContainer = new core.Component();
+        this.scrollContainer.addStyle("application_container");
+        this.appendChild(this.scrollContainer);
         const table = new stats.Table(dm);
-        scrollcontainer.appendChild(table);
+        this.scrollContainer.appendChild(table);
     }
     sendMsg(msg) {
         this.connection.sendMsg(msg);
