@@ -23,6 +23,10 @@ body {
     color: #585858;
 }
 
+.co-OVCharacter:last-child {
+    margin-bottom: 40px;
+}
+
 .co-OVCharacter_Header {
     display: flex;
     height: 150px;
@@ -195,11 +199,11 @@ body {
 
 .header-NavigationBar_Link {
     cursor: pointer;
-    padding: 0 2px;
+    padding: 0 3px;
 }
 
 .header-NavigationBar-Selected {
-    border-bottom: 2px darkred solid;
+    border-bottom: 2px #b90202  solid;
 }.stats-CharCell {
     cursor: pointer;
     display: flex;
