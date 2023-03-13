@@ -6,4 +6,5 @@
 .stats-Table_ScrollContainer {
     display: flex;
     overflow: auto;
+    padding-right: 10px;
 }
