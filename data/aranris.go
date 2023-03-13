@@ -26,7 +26,7 @@ func Aranris() *Char {
 			{TypeID: fmt.Sprint(AttrTypeIntelligence), Name: "Intelligence", Value: "10"},
 			{TypeID: fmt.Sprint(AttrTypeWisdom), Name: "Wisdom", Value: "16"},
 			{TypeID: fmt.Sprint(AttrTypeCharisma), Name: "Charisma", Value: "8"},
-			{TypeID: fmt.Sprint(AttrTypeWalkingSpeed), Name: "Walking Speed", Value: "30"},
+			{TypeID: fmt.Sprint(AttrTypeWalkingSpeed), Name: "Walking Speed", Value: "35"},
 		},
 	}
 }

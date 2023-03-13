@@ -9,13 +9,17 @@ namespace header {
         protected render() {
             this.addStyle(this.baseStyle);
 
+            const topRow = new Component();
+            topRow.addStyle(this.baseStyle + "_TopRow");
+            this.appendChild(topRow);
+
             const logo = new Component();
             logo.addStyle(this.baseStyle + "_logo");
-            this.appendChild(logo);
+            topRow.appendChild(logo);
 
             const container = new Component();
             container.addStyle(this.baseStyle+ "_container");
-            this.appendChild(container);
+            topRow.appendChild(container);
 
             const title = new Component();
             title.addStyle(this.baseStyle + "_title");
@@ -27,6 +31,8 @@ namespace header {
             subTitle.setText("The Last Titan");
             container.appendChild(subTitle);
             
+
+            this.appendChild(new NavigationBar());
         }
 
     }

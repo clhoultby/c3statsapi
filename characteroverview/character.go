@@ -1,9 +1,10 @@
 package characteroverview
 
 import (
+	"fmt"
+
 	"c3statsapi/data"
 	"c3statsapi/publisher"
-	"fmt"
 )
 
 func Init(data []*data.Char) *publisher.Topic {

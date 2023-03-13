@@ -1,17 +1,21 @@
 .header-Header {
     display: flex;
-    background-color: black;
-    height: 120px;
-    border-bottom: 3px #b90202 solid;
     width: 100%;
     flex-direction: column;
+    
 }
 
 @media screen and (min-width: 1200px) {
     .header-Header {
         flex-direction: row;
     }
-    
+}
+
+.header-Header_TopRow {
+    display: flex;
+    height: 90px;
+    width: 100%;
+    flex-direction: column;
 }
 
 .header-Header_logo {
@@ -22,6 +26,7 @@
     flex: 1;
     max-width: 800px;
     width: 100%;
+    background-color: black;
 }
 
 .header-Header_container {
@@ -30,6 +35,8 @@
     justify-content: center;
     flex: 1;
     flex-wrap: wrap;
+    border-bottom: 3px #b90202 solid;
+    background-image: linear-gradient(black, #585858);
 }
 
 .header-Header_title,

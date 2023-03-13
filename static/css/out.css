@@ -123,18 +123,22 @@ body {
 }.core-Page {
 }.header-Header {
     display: flex;
-    background-color: black;
-    height: 120px;
-    border-bottom: 3px #b90202 solid;
     width: 100%;
     flex-direction: column;
+    
 }
 
 @media screen and (min-width: 1200px) {
     .header-Header {
         flex-direction: row;
     }
-    
+}
+
+.header-Header_TopRow {
+    display: flex;
+    height: 90px;
+    width: 100%;
+    flex-direction: column;
 }
 
 .header-Header_logo {
@@ -145,6 +149,7 @@ body {
     flex: 1;
     max-width: 800px;
     width: 100%;
+    background-color: black;
 }
 
 .header-Header_container {
@@ -153,6 +158,8 @@ body {
     justify-content: center;
     flex: 1;
     flex-wrap: wrap;
+    border-bottom: 3px #b90202 solid;
+    background-image: linear-gradient(black, #585858);
 }
 
 .header-Header_title,
@@ -172,7 +179,26 @@ body {
 .header-Header_subtitle {
     font-size: 30px;
 }
-.stats-CharCell {
+.header-NavigationBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: white;
+    height: 30px;
+    color: #585858;
+    font-weight: bold;
+    border-bottom: 1px darkred solid;
+}
+
+
+.header-NavigationBar_Link {
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.header-NavigationBar-Selected {
+    border-bottom: 2px darkred solid;
+}.stats-CharCell {
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -256,6 +282,7 @@ body {
     padding: 5px;
     height: 60px;
     margin: 2px 0;
+    color: #585858;
 }
 
 @media only screen and (min-width: 761px) {
@@ -299,6 +326,7 @@ body {
     height: 60px;
     margin: 2px 0;
     font-size: 11px;
+    color: #585858;
 }
 
 @media only screen and (min-width: 761px) {
@@ -317,7 +345,7 @@ body {
     display: flex;
     flex-direction: column;
     margin-top: 10px;
-    width: 40px;
+    width: 50px;
 }
 
 @media only screen and (min-width: 761px) {

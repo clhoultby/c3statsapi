@@ -313,12 +313,15 @@ var header;
         }
         render() {
             this.addStyle(this.baseStyle);
+            const topRow = new Component();
+            topRow.addStyle(this.baseStyle + "_TopRow");
+            this.appendChild(topRow);
             const logo = new Component();
             logo.addStyle(this.baseStyle + "_logo");
-            this.appendChild(logo);
+            topRow.appendChild(logo);
             const container = new Component();
             container.addStyle(this.baseStyle + "_container");
-            this.appendChild(container);
+            topRow.appendChild(container);
             const title = new Component();
             title.addStyle(this.baseStyle + "_title");
             title.setText("Evermere");
@@ -327,9 +330,49 @@ var header;
             subTitle.addStyle(this.baseStyle + "_subtitle");
             subTitle.setText("The Last Titan");
             container.appendChild(subTitle);
+            this.appendChild(new header.NavigationBar());
         }
     }
     header.Header = Header;
+})(header || (header = {}));
+var header;
+(function (header) {
+    var Component = core.Component;
+    class NavigationBar extends Component {
+        constructor() {
+            super(...arguments);
+            this.baseStyle = "header-NavigationBar";
+            this.links = {
+                "STATS": { name: "Stats", component: new Component() },
+                "CO": { name: "Characters", component: new Component() },
+            };
+        }
+        render() {
+            this.addStyle(this.baseStyle);
+            for (const l in this.links) {
+                const c = this.links[l].component;
+                c.addStyle(this.baseStyle + "_Link");
+                c.setText(this.links[l].name);
+                c.getElement().onclick = () => {
+                    Locator.navigationManager.navigateTo(l);
+                };
+                this.appendChild(c);
+            }
+            Locator.navigationManager.addDelegate(this);
+        }
+        navigationChanged(key) {
+            for (const link in this.links) {
+                const c = this.links[link].component;
+                if (link === key) {
+                    c.addStyle(this.baseStyle + "-Selected");
+                }
+                else {
+                    c.removeStyle(this.baseStyle + "-Selected");
+                }
+            }
+        }
+    }
+    header.NavigationBar = NavigationBar;
 })(header || (header = {}));
 var stats;
 (function (stats) {
@@ -656,6 +699,14 @@ var navigation;
                 "STATS": stats.StatsPage,
                 "CO": characteroverview.CharacterOverviewPage
             };
+            this.delegates = [];
+        }
+        addDelegate(delegate) {
+            this.delegates.push(delegate);
+            delegate.navigationChanged(this.currentKey);
+        }
+        getCurrentLocation() {
+            return this.currentKey;
         }
         setRoot(root) {
             this.root = root;
@@ -668,6 +719,9 @@ var navigation;
             if (key.startsWith("#")) {
                 key = key.substring(1);
             }
+            if (key === this.currentKey) {
+                return;
+            }
             const page = this.pages[key];
             if (!page) {
                 console.error("unsupported pageType");
@@ -678,7 +732,10 @@ var navigation;
             }
             this.root.appendChild(this.currentPage = new page());
             this.currentPage.navigateTo(topic);
-            location.hash = key;
+            location.hash = this.currentKey = key;
+            for (const d of this.delegates) {
+                d.navigationChanged(key);
+            }
         }
     }
     navigation.NavigationManager = NavigationManager;

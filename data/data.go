@@ -53,7 +53,6 @@ func GetCharacters() []*Char {
 		Elendar(),
 		Ofeliya(),
 	}
-
 }
 
 type Char struct {

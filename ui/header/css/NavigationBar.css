@@ -1,0 +1,20 @@
+.header-NavigationBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: white;
+    height: 30px;
+    color: #585858;
+    font-weight: bold;
+    border-bottom: 1px darkred solid;
+}
+
+
+.header-NavigationBar_Link {
+    cursor: pointer;
+    padding: 0 2px;
+}
+
+.header-NavigationBar-Selected {
+    border-bottom: 2px darkred solid;
+}

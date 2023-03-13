@@ -10,9 +10,23 @@ namespace navigation {
 
         private currentPage: Page;
 
+        private currentKey: string;
+
         private pages: Lookup<typeof Page> = {
             "STATS": stats.StatsPage,
             "CO": characteroverview.CharacterOverviewPage
+        }
+
+        private delegates: {navigationChanged: (string) => void}[] = [];
+
+
+        public addDelegate(delegate: {navigationChanged: (string) => void}): void {
+            this.delegates.push(delegate);
+            delegate.navigationChanged(this.currentKey);
+        }
+
+        public getCurrentLocation(): string {
+            return this.currentKey;
         }
 
         public setRoot(root: core.Component) {
@@ -28,6 +42,10 @@ namespace navigation {
             if (key.startsWith("#")) {
                 key = key.substring(1);
             }
+
+            if (key === this.currentKey) {
+                return;
+            }
             
             const page = this.pages[key];
             if (!page) {
@@ -42,7 +60,12 @@ namespace navigation {
             this.root.appendChild(this.currentPage = new page());
             this.currentPage.navigateTo(topic);
 
-            location.hash = key;
+            location.hash = this.currentKey = key;
+
+
+            for (const d of this.delegates) {
+                d.navigationChanged(key);
+            }
         }
 
     }
